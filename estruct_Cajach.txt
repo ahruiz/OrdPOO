@@ -1,0 +1,49 @@
+PROYECTO DE PROG ORIENTADA A OBJETOS
+
+CAJA CHICA
+
+registro de ingresos, gastos y pendientes(caja chica)
+
+control de ingresos y gastos en el que primeramente
+registremos las deudas que tenemos en el momento de iniciar el uso
+de este softw y le demos seguimiento de acuerdo a lo
+que ingresa y a los gastos que vamos a afrontar en el siguiente periodo
+etiquetando los conceptos con colores rojo amarillo y verde si esta 
+en condiciones de gasto o no
+
+la idea es que no tengamos que escribir gasto x gasto 
+sino tomar la foto del ingreso o del gasto y tomar los datos de la misma
+actualizar los saldos y si se requiere mandar un mensaje push si la caja
+se esta quedando sin fondos
+
+
+ocupamos:
+
+cajero
+	name
+	last_name
+	email
+	phone
+	
+caja
+	cajero
+	saldo inicial
+	saldo
+	
+factura(egreso)
+	Proveedor
+	descripcion
+	importe
+	departamento
+	
+ingreso
+	caja
+	monto
+	fecha
+	descripcion
+
+departamento
+	ventas
+	administracion
+	almacen
+	
