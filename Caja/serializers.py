@@ -31,7 +31,7 @@ class FacturaSerializer(serializers.ModelSerializer):
 class IngresoCajaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ingresoCaja
-        fields = ["Caja", "monto", "fecha", "descripcion"]
+        fields = ["caja", "monto", "fecha", "descripcion"]
 
     descripcion = serializers.CharField(
     required=False,

@@ -2,7 +2,7 @@ PROYECTO DE PROG ORIENTADA A OBJETOS
 
 CAJA CHICA(1ra etapa)
 
-registro de FONDO INICIAL, GASTOS y REPOSICIONES(caja chica)
+Registro de FONDO INICIAL, GASTOS y REPOSICIONES(caja chica)
 
 Control de ingresos y gastos en el que primeramente
 registremos el FONDO INICIAL que tenemos en el momento de hacer uso
@@ -87,7 +87,7 @@ jason:
 
 # aplicar factura
 '''
-****************** post: http://127.0.0.1:8000/api/cajas/1/saldo_actual/
+****************** post: http://127.0.0.1:8000/api/cajas/1/aplic_fact/
 jason:
 	{
 		"factura_id": 1
@@ -110,7 +110,7 @@ http://127.0.0.1:8000/api/ingresos/ingreso_total/
 json
     {
         "caja_id": 1,
-        "monto": 2000.00,
+        "monto": 7697.22,
     }
 '''
 
@@ -124,6 +124,10 @@ json
 '''
 **************** get: http://127.0.0.1:8000/api/facturas/
 **************** get: http://127.0.0.1:8000/api/ingresos/
+tambien los podemos ver por caja:
+**************** get: http://127.0.0.1:8000/api/cajas/1/gasto_total/
+o por ingresos:
+**************** get: http://127.0.0.1:8000/api/ingresos/ingreso_total/
 '''
 
 # eliminar registros (cajero, caja, factura, ingreso)

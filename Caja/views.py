@@ -90,7 +90,7 @@ class FacturaViewSet(viewsets.ModelViewSet):
 class IngresoCajaViewSet(viewsets.ModelViewSet):
     queryset = ingresoCaja.objects.all()
     serializer_class = IngresoCajaSerializer
-
+    
     @action(detail=False, methods=["get"])
     def ingreso_total(self, request):
         ingresos = ingresoCaja.objects.all()
@@ -99,7 +99,7 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
         return Response({
             "total_ingresos": total_ingresos
         })
-    
+
     @action(detail=False, methods=["post"])
     def reposicion(self, request):
         caja_id = request.data.get("caja_id")
