@@ -1,11 +1,14 @@
+from os import name
+from sqlite3 import LEGACY_TRANSACTION_CONTROL
 from django.db import models
+from decimal import Decimal
 
 class Cajero(models.Model):
     name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=10)
-    
+
 class Administrator(models.Model):
     class AdminTypes(models.IntegerChoices):
         MANAGEMENT = (1, "Management")
@@ -20,8 +23,8 @@ class Administrator(models.Model):
     
 class Caja(models.Model):
     Cajero = models.OneToOneField(Cajero, on_delete=models.CASCADE)
-    saldo_inicial = models.DecimalField(max_digits=10, decimal_places=2)
-    saldo = models.DecimalField(max_digits=10, decimal_places=2)
+    saldo_inicial = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('8000.00'))
+    saldo = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('8000.00')) 
         
 class Factura(models.Model):
     proveedor = models.CharField(max_length=200)

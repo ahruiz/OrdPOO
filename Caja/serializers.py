@@ -15,8 +15,14 @@ class CajaSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = Caja
-        fields = "__all__"
-        
+        fields = ["Cajero", "saldo_inicial", "saldo"]
+
+    saldo = serializers.CharField(
+    required=False,
+    allow_blank=True,
+    allow_null=True
+    )    
+
 class FacturaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Factura
@@ -25,5 +31,11 @@ class FacturaSerializer(serializers.ModelSerializer):
 class IngresoCajaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ingresoCaja
-        fields = "__all__"
+        fields = ["Caja", "monto", "fecha", "descripcion"]
+
+    descripcion = serializers.CharField(
+    required=False,
+    allow_blank=True,
+    allow_null=True
+    )    
         

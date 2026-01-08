@@ -1,6 +1,7 @@
 import json
+from turtle import pos
+from webbrowser import get
 from rest_framework import serializers
-from datetime import datetime
 from django.shortcuts import render
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -23,6 +24,23 @@ class CajaViewSet(viewsets.ModelViewSet):
     queryset = Caja.objects.all()
     serializer_class = CajaSerializer
 
+    @action(detail=True, methods=["get"])
+    def gasto_total(self, request, pk=None):
+        caja = self.get_object()
+        gastos = Factura.objects.filter(aplicada=True)
+        total_gastos = sum(factura.importe for factura in gastos)
+        tot_ingreso =  sum(ingreso.monto for ingreso in ingresoCaja.objects.filter(caja=caja)) 
+        nom_cajero = caja.Cajero.name + " " + caja.Cajero.last_name
+
+        return Response({
+            "caja_id": caja.id,
+            "nombre_cajero": nom_cajero,
+            "saldo_inicial ": caja.saldo_inicial,
+            "total_ingresos": tot_ingreso,
+            "total_gastos  ": total_gastos,
+            "saldo_actual  ": caja.saldo
+        })
+    
     @action(detail=True, methods=["post"])
     def aplic_fact(self, request, pk= None):
         caja = self.get_object()
@@ -58,6 +76,7 @@ class CajaViewSet(viewsets.ModelViewSet):
         return Response({
             "caja_id": caja.id,
             "factura_id": factura.id,
+            "descripcion": factura.description,
             "saldo Inicial": caja.saldo_inicial,
             "saldo anterior": caja.saldo + factura.importe,
             "importe": factura.importe,
@@ -71,9 +90,18 @@ class FacturaViewSet(viewsets.ModelViewSet):
 class IngresoCajaViewSet(viewsets.ModelViewSet):
     queryset = ingresoCaja.objects.all()
     serializer_class = IngresoCajaSerializer
+
+    @action(detail=False, methods=["get"])
+    def ingreso_total(self, request):
+        ingresos = ingresoCaja.objects.all()
+        total_ingresos = sum(i.monto for i in ingresos)
+
+        return Response({
+            "total_ingresos": total_ingresos
+        })
     
     @action(detail=False, methods=["post"])
-    def agregar_ingreso(self, request):
+    def reposicion(self, request):
         caja_id = request.data.get("caja_id")
         monto = request.data.get("monto")               
         descripcion = request.data.get("descripcion", "")
@@ -85,7 +113,8 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
             )
 
         caja = get_object_or_404(Caja, id=caja_id)
-                 
+        nom_cajero = caja.Cajero.name + " " + caja.Cajero.last_name
+                        
         ingreso = ingresoCaja.objects.create(
             caja=caja,
             monto=Decimal(monto),
@@ -94,27 +123,13 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
 
         caja.saldo += Decimal(monto)
         caja.save()
-
+        
         return Response({
-            "ingreso_id": ingreso.id,
+            "nombre cajero": nom_cajero,
             "saldo anterior": caja.saldo - Decimal(monto),
             "monto": ingreso.monto,
-            "caja_id": caja.id,
             "nuevo_saldo": caja.saldo,
             "fecha": ingreso.fecha,
         }, status=status.HTTP_201_CREATED)
         
         
-# actividades de la caja chica
-# crear cajero
-# crear caja
-# crear factura
-# aplicar factura
-# provocar saldo insuficiente
-# agregar ingreso a la caja (reposicion)
-# consultar caja y cajero
-# consultar saldo de la caja
-# consultar historial de ingresos y gastos
-# consultar facturas aplicadas y pendientes
-# eliminar registros (cajero, caja, factura, ingreso)
-# modificar datos (cajero, caja, factura, ingreso) 

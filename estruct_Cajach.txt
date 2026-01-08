@@ -1,32 +1,38 @@
 PROYECTO DE PROG ORIENTADA A OBJETOS
 
-CAJA CHICA
+CAJA CHICA(1ra etapa)
 
-registro de ingresos, gastos y pendientes(caja chica)
+registro de FONDO INICIAL, GASTOS y REPOSICIONES(caja chica)
 
-control de ingresos y gastos en el que primeramente
-registremos las deudas que tenemos en el momento de iniciar el uso
-de este softw y le demos seguimiento de acuerdo a lo
-que ingresa y a los gastos que vamos a afrontar en el siguiente periodo
-etiquetando los conceptos con colores rojo amarillo y verde si esta 
-en condiciones de gasto o no
+Control de ingresos y gastos en el que primeramente
+registremos el FONDO INICIAL que tenemos en el momento de hacer uso
+de este softw y le demos seguimiento de acuerdo a lo los gastos 
+(FACTURAS) que vamos a considerar como imprevistos o que no se 
+programan o que son espontaneos (surgen como consecuencia de ...).
+La idea es que una vez que estemos cerca de agotar el fondo inicial
+efectuemos un ingreso(REPOSICION) a la caja chica para reponer el dinero.
 
-la idea es que no tengamos que escribir gasto x gasto 
-sino tomar la foto del ingreso o del gasto y tomar los datos de la misma
-actualizar los saldos y si se requiere mandar un mensaje push si la caja
-se esta quedando sin fondos
+MEJORAS(2da etapa)
+bitacora
+captura de imagen para un manejo mas eficiente y seguro.
+	En esta seccion se captura el texto de la imagen y se procesa
+	conforme a lo indicado en la 1ra etapa.
+Generacion de mensajes PUSH para indicar que se estan agotando los
+fondos, incluso se podria cambiar el color del ICONO entre los
+colores entre verde, amarillo y rojo dependiendo del estatus de la
+caja chica.
 
 
-ocupamos:
+Ocupamos, como minimo:
 
 cajero
-	name
-	last_name
+	nombre
+	apellido
 	email
 	phone
 	
 caja
-	cajero
+	cajero responsable(id)
 	saldo inicial
 	saldo
 	
@@ -42,8 +48,95 @@ ingreso
 	fecha
 	descripcion
 
-departamento
-	ventas
-	administracion
-	almacen
-	
+
+
+# actividades de la caja chica
+#__________________________________________________
+# crear cajero
+'''
+****************** post: http://127.0.0.1:8000/api/cajeros/
+jason:
+	{ 
+	  "name": "Angel",
+	  "last_name": "Ruiz",
+	  "email": "Ahruiz0@gmail.com",
+	  "phone": "7771234567"
+	}
+'''
+
+# crear caja
+'''
+****************** post: http://127.0.0.1:8000/api/cajas/
+jason:
+	{ 
+	  "cajero": 1
+	}
+'''
+
+# capturamos factura
+'''
+****************** post: http://127.0.0.1:8000/api/facturas/ 
+jason:
+	{
+		"proveedor": "Home Depot",
+		"description": "fact:7789...Compra de Estantes",
+		"importe": 1299.22,
+		"departamento": "Almacen"
+	}
+'''
+
+# aplicar factura
+'''
+****************** post: http://127.0.0.1:8000/api/cajas/1/saldo_actual/
+jason:
+	{
+		"factura_id": 1
+	}
+'''
+
+# provocar saldo insuficiente
+'''
+se da cuando el importe de las facturas es mayor al saldo actual de la caja'''
+
+# consultar total de gastos y total de ingresos
+'''
+http://127.0.0.1:8000/api/cajas/1/gasto_total/
+http://127.0.0.1:8000/api/ingresos/ingreso_total/
+'''
+
+# agregar ingreso a la caja (reposicion)
+''' en el paso anterior consuktamos el gasto total y esa es la cantidad que vamos a reponer
+****************post: http://127.0.0.1:8000/api/ingresos/reposicion/
+json
+    {
+        "caja_id": 1,
+        "monto": 2000.00,
+    }
+'''
+
+# consultar caja (saldo) y cajero
+'''
+************** get: http://127.0.0.1:8000/api/cajas/
+************** get: http://127.0.0.1:8000/api/cajeros/
+'''
+
+# consultar historial de ingresos y gastos
+'''
+**************** get: http://127.0.0.1:8000/api/facturas/
+**************** get: http://127.0.0.1:8000/api/ingresos/
+'''
+
+# eliminar registros (cajero, caja, factura, ingreso)
+'''
+**************** delete: http://127.0.0.1:8000/api/facturas/4/
+'''
+
+# modificar datos (cajero, caja, factura, ingreso) 
+'''
+**************** patch: http://127.0.0.1:8000/api/facturas/2/
+json
+    {
+        "monto": 2000.00,
+    }
+'''
+
