@@ -39,5 +39,4 @@ class ingresoCaja(models.Model):
     caja = models.ForeignKey(Caja, on_delete=models.CASCADE)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha = models.DateTimeField(auto_now_add=True)
-    descripcion = models.TextField()
-    
+    descripcion = models.TextField(default="Reposicion de caja chica")

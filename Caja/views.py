@@ -128,6 +128,7 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
             "nombre cajero": nom_cajero,
             "saldo anterior": caja.saldo - Decimal(monto),
             "monto": ingreso.monto,
+            "descripcion": ingreso.descripcion,
             "nuevo_saldo": caja.saldo,
             "fecha": ingreso.fecha,
         }, status=status.HTTP_201_CREATED)

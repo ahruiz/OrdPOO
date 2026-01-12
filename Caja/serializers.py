@@ -1,3 +1,4 @@
+from os import read
 from rest_framework import serializers
 from .models import Cajero, Administrator, Caja, Factura, ingresoCaja
 
@@ -31,11 +32,10 @@ class FacturaSerializer(serializers.ModelSerializer):
 class IngresoCajaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ingresoCaja
-        fields = ["caja", "monto", "fecha", "descripcion"]
-
-    descripcion = serializers.CharField(
-    required=False,
-    allow_blank=True,
-    allow_null=True
-    )    
+        fields = ["id", "caja_id", "monto", "fecha", "descripcion"]
         
+    descripcion = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        allow_null=True
+        )
