@@ -29,13 +29,15 @@ class FacturaSerializer(serializers.ModelSerializer):
         model = Factura
         fields = "__all__"
 
-class IngresoCajaSerializer(serializers.ModelSerializer):
+class ingresoCajaSerializer(serializers.ModelSerializer):
+    caja_id = serializers.IntegerField(source="caja.id")
+
     class Meta:
         model = ingresoCaja
-        fields = ["id", "caja_id", "monto", "fecha", "descripcion"]
+        fields = ["id", "monto", "fecha", "descripcion", "caja_id"]
         
     descripcion = serializers.CharField(
         required=False,
-        allow_blank=True,
-        allow_null=True
-        )
+        default="Reposición de caja chica"
+    )
+        

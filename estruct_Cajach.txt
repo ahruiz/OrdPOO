@@ -110,7 +110,7 @@ http://127.0.0.1:8000/api/ingresos/ingreso_total/
 json
     {
         "caja_id": 1,
-        "monto": 7697.22,
+        "monto": 0.98,
     }
 '''
 

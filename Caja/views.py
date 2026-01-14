@@ -9,7 +9,7 @@ from rest_framework import viewsets, status
 from decimal import Decimal
 from django.shortcuts import get_object_or_404
 from .models import Cajero, Administrator, Caja, Factura, ingresoCaja
-from .serializers import CajeroSerializer, AdministratorSerializer, CajaSerializer, FacturaSerializer, IngresoCajaSerializer
+from .serializers import CajeroSerializer, AdministratorSerializer, CajaSerializer, FacturaSerializer, ingresoCajaSerializer
 
 class CajeroViewSet(viewsets.ModelViewSet):
     queryset = Cajero.objects.all()
@@ -89,7 +89,7 @@ class FacturaViewSet(viewsets.ModelViewSet):
     
 class IngresoCajaViewSet(viewsets.ModelViewSet):
     queryset = ingresoCaja.objects.all()
-    serializer_class = IngresoCajaSerializer
+    serializer_class = ingresoCajaSerializer
     
     @action(detail=False, methods=["get"])
     def ingreso_total(self, request):
@@ -118,8 +118,9 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
         ingreso = ingresoCaja.objects.create(
             caja=caja,
             monto=Decimal(monto),
-            descripcion=descripcion
-        )
+            descripcion="Reposicion de caja chica " if descripcion == "" else descripcion
+            )
+        
 
         caja.saldo += Decimal(monto)
         caja.save()
