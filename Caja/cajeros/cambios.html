@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./cajeros.css">
+    <script type="application/javascript" src="./cajeros.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Cambios de cajero</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+
+                    <input class="input-form" type="number" name="id" id="id" placeholder="ID del cajero a modificar">
+                    <p class="text-card">Campo a modificar</p>
+                    <div id="type">
+                        <input type="radio" name="camp_mod" id="cam_nom" value="nombre" checked> Nombre
+                        <input type="radio" name="camp_mod" id="cam_ape" value="apellido"> Apellido
+                        <input type="radio" name="camp_mod" id="cam_email" value="email"> Email
+                        <input type="radio" name="camp_mod" id="cam_phone" value="phone"> Teléfono
+                    </div>
+                    <input class="input-form" type="text" name="value" id="value" placeholder="Nuevo valor">
+                    <button class="btn-form" onclick="makeFetch()">solicitar informacion</button>
+                    <button class="btn-form" onclick="modifica_cajero()">Modificar cajero</button>
+                    <button class="btn-form1" onclick="location.href='../cajeros/cajeros.html'">Volver a
+                        Cajeros</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+</body>
+
+</html>
+
+</html>
