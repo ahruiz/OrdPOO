@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./facturas.css">
+    <script type="application/javascript" src="./facturas.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Facturas</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h1>Alta de Facturas</h1>
+                    <input class="input-form" type="text" name="numFact" id="numFact" placeholder="Número de Factura">
+                    <input class="input-form" type="text" name="proveedor" id="proveedor" placeholder="Proveedor">
+                    <input class="input-form" type="text" name="description" id="description" placeholder="Descripción">
+                    <input class="input-form" type="number" name="importe" id="importe" placeholder="Importe">
+                    <input class="input-form" type="text" name="departamento" id="departamento"
+                        placeholder="Departamento">
+                    <button class="btn-form" onclick="makeFetch()">solicitar informacion</button>
+                    <button class="btn-form" onclick="crear_fact()">Crear Factura</button>
+                    <button class="btn-form1" onclick="location.href='../facturas/facturas.html'">Volver a
+                        Facturas</button>
+                    <button class="btn-form1" onclick="location.href='../menuppal/p_ppal.html'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+    <div class="text-card" id="mensaje"></div>
+</body>
+
+</html>

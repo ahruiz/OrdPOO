@@ -62,7 +62,7 @@ jason:
 	  "email": "Ahruiz0@gmail.com",
 	  "phone": "7771234567"
 	}
-'''
+'''--------------------------------------------------------------------------------->>>>>>>>> pendientes de cajeros: indicacion de color para caja asignada
 
 # crear caja
 '''
@@ -71,7 +71,7 @@ jason:
 	{ 
 	  "cajero": 1
 	}
-'''
+'''---------------------------------------------------------------------------------->>>>>>>>> pendientes de caja: indicacion de color para saldomenor, saldo medio y saldo normal
 
 # capturamos factura
 '''
@@ -83,6 +83,13 @@ jason:
 		"importe": 1299.22,
 		"departamento": "Almacen"
 	}
+
+		"factura_id": factura.id,
+		"descripcion": factura.description,
+		"saldo Inicial": caja.saldo_inicial,
+		"saldo anterior": caja.saldo + factura.importe,
+		"importe": factura.importe,
+		"nuevo_saldo": caja.saldo	
 '''
 
 # aplicar factura

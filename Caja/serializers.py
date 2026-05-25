@@ -1,6 +1,18 @@
 from os import read
 from rest_framework import serializers
-from .models import Cajero, Administrator, Caja, Factura, ingresoCaja
+from .models import Usuario, Admin, Cajero, Administrator, Caja, Factura, ingresoCaja
+from Caja.models import Usuario, Admin, Cajero, Administrator, Caja, Factura, ingresoCaja
+
+
+class UsuarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = ["id", "nombre", "email", "password"]
+
+class AdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Admin
+        fields = "__all__"
 
 class CajeroSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,28 +28,28 @@ class CajaSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = Caja
-        fields = ["Cajero", "saldo_inicial", "saldo"]
-
-    saldo = serializers.CharField(
-    required=False,
-    allow_blank=True,
-    allow_null=True
-    )    
+        fields = ["id", "Cajero", "saldo_inicial", "saldo"]
+ 
 
 class FacturaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Factura
         fields = "__all__"
 
+        extra_kwargs = {
+            'aplicada': {'required': False}
+        }
+
 class ingresoCajaSerializer(serializers.ModelSerializer):
-    caja_id = serializers.IntegerField(source="caja.id")
+    caja = serializers.PrimaryKeyRelatedField(queryset=Caja.objects.all())
 
     class Meta:
         model = ingresoCaja
-        fields = ["id", "monto", "fecha", "descripcion", "caja_id"]
+        fields = ["id", "caja", "facturs", "monto", "descripcion", "fecha"]
+    
+        extra_kwargs = {"facturs":{"required":False, "allow_null": True}}
         
     descripcion = serializers.CharField(
         required=False,
         default="Reposición de caja chica"
     )
-        

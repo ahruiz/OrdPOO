@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('Caja.urls'))
+
+    # Rutas para la aplicación de caja chica]
+    path('api/', include('Caja.urls')),
 ]

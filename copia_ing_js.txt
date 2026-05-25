@@ -1,0 +1,437 @@
+
+var urlingresos = "http://127.0.0.1:8000/api/ingresos/"
+var urlcajas = "http://127.0.0.1:8000/api/cajas/"
+var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
+
+let facturasPorCajaAcc = {};
+
+function reposiciones() {
+    Promise.all([
+        fetch(urlcajas).then(r => r.json()),
+        fetch(urlfacturas).then(r => r.json())
+    ])
+        .then(([cajas, facturas]) => {
+            console.log("cajas", cajas);
+            console.log("facturas", facturas);
+
+
+            if (cajas.length === 0 || facturas.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            var card = cajas.map(function (caja) {
+                var facturasporCaja = facturas.filter(f => Number(f.aplicada) == Number(caja.id) && (!f.numRespos || Number(f.numRespos) === 0));
+                facturasPorCajaAcc[caja.id] = facturasporCaja.map(f => f.numFact);
+                return `
+
+                <div class="cards">
+                        <img src="./dinero_img.jpg" alt="" class="custom-image">
+                        <p class= "btn-form1">Caja: ${caja.id}</p>
+                        ${facturasporCaja.map(f => `
+                                <p class="btn-form1">
+                                    Factura: ${f.id} (${f.numFact}) : ${f.importe} - ${f.numRepos ? `(Repos-${f.numRepos})` : "(Repos-0)"}
+                                </p>
+                            `).join("")
+                    }
+                        <p class="btn-form1">Saldo: ${caja.saldo}</p>
+                        <p class="btn-form">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0)}</p>
+                <button class="btn-form1" onclick="crear_repos(facturasPorCajaAcc, numRepos)">
+                    Generar Reposicion
+                </button>
+                </div >
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+            console.log("facts por Caja", facturasPorCajaAcc);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
+function gastototsinfacts() {
+
+    Promise.all([
+        fetch(urlcajas).then(r => r.json()),
+        fetch(urlfacturas).then(r => r.json())
+    ])
+        .then(([cajas, facturas]) => {
+            console.log("cajas", cajas);
+            console.log("facturas", facturas);
+
+            if (cajas.length === 0 || facturas.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+
+            var card = cajas.map(function (caja) {
+                var facturasporCaja = facturas.filter(f => Number(f.aplicada) == Number(caja.id));
+                return `
+
+            <div class= "cards">
+            <img src="../facturas/factura.jpg" alt="" class="custom-image">
+                <p class="btn-form1">Caja: ${caja.id}</p>
+                <p class="btn-form1">Saldo: ${caja.saldo}</p>
+                <p class="btn-form">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0)}</p>
+
+            </div>
+                    `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+}
+
+function mostrar_reposicns() {
+    fetch(urlingresos)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error en la solicitud");
+            }
+            return response.json();
+        })
+
+        .then(data => {
+            console.log(data);
+            var campos = data;
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            var card = campos.map(function (campo) {
+                return `
+            <div class= "cards">
+            <img src="./dinero_img.jpg" alt="" class="custom-image">
+                <h2 class="badge">ID de Ingreso: ${campo.id}</h2>
+                <p class="badge">Num de Caja: ${campo.caja_id}</p>
+                <p class="badge">Importe: ${(campo.monto ? campo.monto : "")}</p>
+                <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "")}</p>
+                <p class="badge">Fecha: ${(campo.fecha ? campo.fecha : "")}</p>
+                <p class="badge">Facturas asociadas: ${(campo.facturs ? campo.facturs : "")}</p>
+            </div>
+                    `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+}
+
+function makeFetch1() {
+    fetch(urlingresos)
+        .then(Response => {
+            if (!Response.ok) {
+                throw new Error("Error en la solicitud");
+            }
+            return Response.json();
+        })
+
+        .then(data => {
+            console.log(data);
+
+            if (data.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            facturasexistentes = data.map(f => Number(f.numFact)); // Guardamos los números de factura existentes
+
+            var card = data.map(function (campo) {
+                return `
+            < div class= "cards" >
+            <img src="./dinero_img.jpg" alt="" class="custom-image">
+                <h2 class="badge">ID de Ingreso: ${campo.id}</h2>
+                <p class="badge">Num de Caja: ${campo.caja_id}</p>
+                <p class="badge">Importe: ${(campo.monto ? campo.monto : "")}</p>
+                <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "")}</p>
+                <p class="badge">Facturas asociadas: ${(campo.facturs ? campo.facturs : "")}</p>
+                <p class="badge">Fecha: ${(campo.fecha ? campo.fecha : "")}</p>
+                <button class="btn-form1" onclick="borrarreposicion(${campo.id})">
+                    Borrar
+                </button>
+            </div>
+                    `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+}
+
+function crear_repos(facturasPorCajaAcc, numRepos) {
+    var caja_id = document.getElementById("caja_id").value;
+    var monto = document.getElementById("monto").value;
+    var descripcion = document.getElementById("descripcion").value;
+    var facturs = facturasPorCajaAcc;
+    var numRepos = numRepos;
+
+    console.log("datos a env", caja_id, (facturasPorCajaAcc, numRepos));
+
+    var data = {
+        caja_id: caja_id,
+        monto: monto,
+        descripcion: descripcion,
+        facturs: facturs,
+        numRepos: numRepos
+
+    };
+
+
+    fetch(urlingresos + "reposicion/", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error en el servidor");
+            }
+            return response.json();
+        })
+        .then(reposicion => {
+            console.log('Reposicion creada exitosamente:', reposicion);
+            alert(`Reposicion creada con ID: ${reposicion.id} `);
+
+            document.getElementById("caja_id").value = "";
+            document.getElementById("monto").value = "";
+            document.getElementById("descripcion").value = "";
+            reposiciones();
+        })
+        .catch(error => {
+            console.log('Hubo un problema:', error);
+            alert("No se pudo crear la reposicion. Revisa la consola.");
+        });
+}
+
+function borrarreposicion(id) {
+
+    if (!confirm("¿Seguro que quieres borrar esta reposicion?")) {
+        return;
+    }
+
+    fetch(url + id + "/", {
+        method: "DELETE"
+    })
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Error al borrar");
+            }
+
+            alert("Reposicion borrada exitosamente");
+            makeFetch1(); // Recargar tarjetas
+        })
+        .catch(error => {
+            console.log("Error:", error);
+            alert("No se pudo borrar la reposicion. Revisa la consola.");
+        });
+}
+
+function modifica_fact() {
+    let id = document.getElementById("id").value;
+    let valor = document.getElementById("value").value;
+
+
+    if (document.getElementById("numFact").checked) {
+        valor = document.getElementById("value").value;
+
+        var numFact = valor;
+        var data = {
+            numFact: numFact
+        };
+
+        console.log(data)
+
+    } else if (document.getElementById("proveedor").checked) {
+        valor = document.getElementById("value").value;
+
+        var proveedor = valor;
+        var data = {
+            proveedor: proveedor
+        };
+
+        console.log(data)
+
+    } else if (document.getElementById("description").checked) {
+        valor = document.getElementById("value").value;
+
+        var description = valor;
+        var data = {
+            description: description
+        };
+
+        console.log(data)
+
+    } else if (document.getElementById("importe").checked) {
+        valor = document.getElementById("value").value;
+
+        var importe = valor;
+        var data = {
+            importe: importe
+        };
+
+        console.log(data)
+
+    } else {
+        valor = document.getElementById("value").value;
+
+        var departamento = valor;
+        var data = {
+            departamento: departamento
+        };
+        console.log(data)
+    }
+
+
+
+    fetch(url + id + "/", {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => {
+
+            if (data.proveedor === "" || data.description === "" || data.importe === "" || data.departamento === "") {
+                throw new Error("Faltan datos, favor de completar el formulario");
+            }
+
+            return response.json();
+        })
+
+        .then(response => {
+            console.log('Respuesta de sv:' + response)
+            alert("Factura modificada exitosamente");
+
+            document.getElementById("numFact").value = "";
+            document.getElementById("proveedor").value = "";
+            document.getElementById("description").value = "";
+            document.getElementById("importe").value = "";
+            document.getElementById("departamento").value = "";
+
+            makeFetch();
+
+        })
+
+        .catch(error => {
+            console.log('Error en el servidor:' + error)
+
+            document.getElementById("mensaje").innerHTML =
+                error.message;
+
+        });
+
+}
+
+
+                    <input class="input-form" type="Number" name="id" id="id" placeholder="Reposicion ID">
+                    <input class="input-form" type="Number" name="caja" id="caja" placeholder="Caja ID">
+                    <input class="input-form" type="Number" name="monto" id="monto" placeholder="Monto">
+
+
+
+parota 5/8
+6 de 2.4 x .6
+2 de 2.4 x .1
+5 de 0.5 x .1
+trip de parota 6mm
+2 de 2.4 x 1.2
+chillilos busca rosca de 1.5 
+0.3 kg
+
+mad tot parota
+ 8.64 en pzas de 2.4 x .6
+ 0.48 en pzas de 2.4 x .1
+ 0.25 en pzas de 0.5 x .1
+ 9.37 entre 3m2 de c/hoja 3.14 hojas
+ Perfecto, angel. Te muestro cómo puedes lograr una experiencia de conversación por voz conmigo usando tu computadora o teléfono:
+
+### 📱 En tu teléfono
+- **iOS (iPhone/iPad):**
+  - Activa **Dictado** desde el teclado para hablar en lugar de escribir.
+  - Usa **VoiceOver** o cualquier app de **Texto a Voz (TTS)** para escuchar mis respuestas.
+- **Android:**
+  - Usa el micrófono del teclado de Google (Gboard) para dictar tus preguntas.
+  - Activa **TalkBack** o instala una app de lectura en voz alta para escuchar mis respuestas.
+
+### 💻 En tu computadora (Windows)
+- Activa el **dictado por voz** presionando `Win + H` y habla en lugar de escribir.
+- Para escuchar mis respuestas, puedes usar el narrador de Windows o instalar un programa de **lectura de texto en voz alta** (por ejemplo, Natural Reader o Balabolka).
+
+### 🔄 Integración más fluida
+Si quieres que sea casi como una llamada:
+- Usa un asistente virtual (como Cortana o Alexa) que pueda leer mis respuestas en voz alta.
+- O conecta un software de dictado y lectura en voz alta para que todo lo que escribas y recibas se convierta en voz automáticamente.
+
+¿Quieres que te guíe paso a paso en cómo configurarlo específicamente en tu **Windows 11** (ya que sé que lo usas), para que puedas hablarme y escucharme directamente desde tu PC?
+
+ Muy bien, angel. Te muestro paso a paso cómo puedes configurar tu **Windows 11** para hablarme y escuchar mis respuestas como si fuera una conversación por voz:
+
+---
+
+### 🎤 Activar dictado por voz
+1. Presiona las teclas **Win + H**.
+2. Se abrirá la barra de dictado en la parte superior de la pantalla.
+3. Haz clic en el ícono del micrófono y empieza a hablar; Windows convertirá tu voz en texto automáticamente.
+
+---
+
+### 🔊 Escuchar mis respuestas
+1. Abre el menú de **Configuración** (`Win + I`).
+2. Ve a **Accesibilidad > Narrador**.
+3. Activa el **Narrador**: este leerá en voz alta todo lo que aparece en pantalla, incluidas mis respuestas.
+   - Puedes ajustar la voz y velocidad en las opciones de Narrador.
+   - Si prefieres algo más natural, puedes instalar programas de **Texto a Voz (TTS)** como *Natural Reader* o *Balabolka*.
+
+---
+
+### ⚡ Para hacerlo más fluido
+- Usa el dictado para hablarme.
+- Activa el Narrador o un lector TTS para escuchar mis respuestas.
+- Así tendrás un ciclo completo: tú hablas → Windows escribe → yo respondo → Windows lee en voz alta.
+
+---
+
+¿Quieres que te muestre cómo configurar una voz más natural en el Narrador de Windows 11, para que suene menos robótica y más cercana a una conversación real?
+Genial, angel. Aquí tienes cómo configurar una voz más natural en el **Narrador de Windows 11** para que la experiencia sea más cercana a una conversación real:
+
+---
+
+### 🎶 Cambiar la voz del Narrador
+1. Abre **Configuración** con `Win + I`.
+2. Ve a **Accesibilidad > Narrador**.
+3. En la sección **Personalizar la voz del Narrador**, selecciona **Agregar voces**.
+4. Se abrirá la ventana de **Configuración de voz**. Aquí puedes:
+   - Descargar voces adicionales en distintos idiomas.
+   - Elegir voces más naturales como **Microsoft David**, **Microsoft Zira**, o las nuevas voces “Neural” que suenan más humanas.
+5. Una vez instaladas, vuelve al menú del Narrador y selecciona la voz que prefieras.
+6. Ajusta la **velocidad**, **tono** y **volumen** para que se adapten a tu gusto.
+
+---
+
+### 🌟 Tip extra
+Si quieres aún más naturalidad, puedes instalar paquetes de voz de **Microsoft Azure Cognitive Services** o apps de terceros como *Natural Reader*, que ofrecen voces casi indistinguibles de una persona real.
+
+---
+
+¿Quieres que te muestre directamente cuáles son las voces “neural” más recomendadas en español para que tu Narrador suene lo más humano posible?

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./ingresos.css">
+    <script type="application/javascript" src="./ingresos.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambios de Reposiciones</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h1>Modificar de Reposiciones</h1>
+                    <input class="input-form" type="number" name="id" id="id" placeholder="ID Reposicion a modificar">
+                    <p class="text-card">Campo a modificar</p>
+                    <div id="type">
+                        <input type="radio" name="camp_mod" id="caja" value="caja" checked> Caja ID
+                        <input type="radio" name="camp_mod" id="facturs" value="facturs"> Facturas
+                        <input type="radio" name="camp_mod" id="monto" value="monto"> Monto
+                        <input type="radio" name="camp_mod" id="descripcion" value="descripcion"> Descripcion
+                    </div>
+                    <input class="input-form" type="text" name="value" id="value" placeholder="Nuevo valor">
+                    <button class="btn-form" onclick="makeFetch()">solicitar informacion</button>
+                    <button class="btn-form" onclick="modif_repos()">Modificar Reposicion</button>
+                    <button class="btn-form1" onclick="location.href='../ingresos/ingresos.html'">Volver a
+                        Ingresos</button>
+                    <button class="btn-form1" onclick="location.href='../menuppal/p_ppal.html'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+</body>
+
+</html>
+
+</html>

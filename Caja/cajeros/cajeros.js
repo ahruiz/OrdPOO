@@ -1,5 +1,7 @@
-
+// API de Caja Chica (proyecto raíz) — puerto 8000
 var url = "http://127.0.0.1:8000/api/cajeros/"
+var urlcajas = "http://127.0.0.1:8000/api/cajas/"
+var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
 
 function makeFetch() {
     fetch(url).then(Response => {
@@ -12,6 +14,11 @@ function makeFetch() {
         .then(data => {
             console.log(data);
             var campos = data;
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay cajeros registrados.</h1>";
+                return;
+            }
 
             var card = campos.map(function (campo) {
                 return `
@@ -33,39 +40,98 @@ function makeFetch() {
 
 }
 
-function makeFetch1() {
-    fetch(url).then(Response => {
-        if (!Response.ok) {
-            throw new Error("Error en la solicitud");
-        }
-        return Response.json();
-    })
+var cajerosconsaldo = [];
 
-        .then(data => {
-            console.log(data);
-            var campos = data;
+function cajerossaldo() {
+    Promise.all([
+        fetch(urlcajas).then(r => r.json()),
+        fetch(url).then(r => r.json())
+    ])
+        .then(([cajas, cajeros]) => {
+            console.log("cajas", cajas);
+            console.log("cajeros", cajeros);
 
-            var card = campos.map(function (campo) {
+            if (cajas.length === 0 || cajeros.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            cajerosconsaldo = cajeros.filter(c => cajas.some(caja => caja.Cajero == c.id && caja.saldo > 0)); // Filtrar cajeros que tienen una caja con saldo
+            console.log("cajeros con saldo", cajerosconsaldo);
+            if (cajerosconsaldo.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            var card = cajerosconsaldo.map(function (cajero) {
+                var caja = cajas.find(c => c.id == c.id); // Encontrar la caja asociada al cajero
+
                 return `
                     <div class="cards">
-                        <img src="../cajeros/cajero.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Cajero: ${campo.id}</h2>
-                        <p class="badge">Nombre: ${campo.name.toUpperCase()} ${campo.last_name.toUpperCase()}</p>
-                        <p class="badge">Correo: ${campo.email.toUpperCase()}</p>
-                        <p class="badge">Telefono: ${campo.phone}</p>
+                        <img src="../cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <h2 class="badge">Num de Caja: ${cajero.id}</h2>
+                        <p class="badge">Cajero: ${caja ? caja.Cajero : "Desconocido"}</p>
+                        <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
+                        <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
+                        <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
+                        <p class="badge">Saldo inicial: ${caja ? caja.saldo_inicial : "Desconocido"}</p>
+                        <p class="btn-form1">Saldo actual: ${caja ? caja.saldo : "Desconocido"}</p>
+                    </div>
+            `}).join("");
 
-                        <button class="btn-form1" onclick="borrarCajero(${campo.id})">
+            document.getElementById("element").innerHTML = card;
+            makeFetch
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
+var cajerossinsaldo = [];
+
+function cajerosSinSaldo() {
+    Promise.all([
+        fetch(urlcajas).then(r => r.json()),
+        fetch(url).then(r => r.json())
+    ])
+        .then(([cajas, cajeros]) => {
+            console.log("cajas", cajas);
+            console.log("cajeros", cajeros);
+
+
+            cajerossinsaldo = cajeros.filter(c => cajas.some(caja => caja.Cajero == c.id && caja.saldo <= 0)); // Filtrar cajeros que no tienen una caja con saldo
+            console.log("cajeros sin saldo", cajerossinsaldo);
+            if (cajerossinsaldo.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            var card = cajerossinsaldo.map(function (cajero) {
+                var caja = cajas.find(c => c.id == cajero.id); // Encontrar la caja asociada al cajero
+
+
+                return `
+                    <div class="cards">
+                        <img src="../cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <h2 class="badge">Num de Caja: ${cajero.id}</h2>
+                        <p class="badge">Cajero: ${caja ? caja.Cajero : "Desconocido"}</p>
+                        <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
+                        <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
+                        <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
+                        <p class="badge">Saldo inicial: ${caja ? caja.saldo_inicial : "Desconocido"}</p>
+                        <p class="btn-form1">Saldo actual: ${caja ? caja.saldo : "Desconocido"}</p>
+                        <button class="btn-form1" onclick="borrarCajero(${cajero.id})">
                          Borrar
                         </button>
                     </div>
             `}).join("");
 
             document.getElementById("element").innerHTML = card;
+            makeFetch
         })
         .catch(error => {
             console.log(error);
         });
-
 }
 
 
@@ -82,7 +148,10 @@ function crear_cajero() {
         phone: phone
     };
 
-    console.log(data)
+    if (data.name === "" || data.last_name === "" || data.email === "" || data.phone === "") {
+        alert("Faltan datos, favor de completar el formulario");
+        return;
+    }
 
     fetch(url, {
         method: 'POST',
@@ -90,15 +159,34 @@ function crear_cajero() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data),
-    }).then(response => {
-        console.log('Respuesta de sv:' + response)
-        makeFetch();
+    })
+        .then(response => {
 
-    }).catch(error => {
-        console.log('Error en el servidor:' + error)
+            if (!response.ok) {
+                throw new Error("Faltan datos, favor de completar el formulario");
 
+            }
 
-    });
+            return response.json();
+        })
+        .then(response => {
+            console.log('Respuesta de sv:' + response)
+
+            document.getElementById("nombre").value = "";
+            document.getElementById("apellido").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("phone").value = "";
+
+            makeFetch();
+
+        })
+        .catch(error => {
+            console.log('Error en el servidor:' + error)
+
+            document.getElementById("mensaje").innerHTML =
+                error.message;
+
+        });
 
 }
 
@@ -118,7 +206,7 @@ function borrarCajero(id) {
             }
 
             alert("Cajero eliminado");
-            makeFetch1(); // Recargar tarjetas
+            makeFetch(); // Recargar tarjetas
         })
         .catch(error => {
             console.log("Error:", error);
@@ -127,15 +215,16 @@ function borrarCajero(id) {
 }
 
 function modifica_cajero() {
-    if (!confirm("¿Seguro que quieres modificar este cajero?")) {
+    let id = document.getElementById("id").value;
+    let valor = document.getElementById("value").value.trim();
+
+    if (!id || !valor) {
+        document.getElementById("mensaje").innerHTML = "Favor de completar todos los campos del formulario";
         return;
     }
-    let id = document.getElementById("id").value;
-    let valor = document.getElementById("value").value;
-
 
     if (document.getElementById("cam_nom").checked) {
-        valor = document.getElementById("value").value;
+        valor = document.getElementById("value").value.trim();
 
         var nombre = valor;
         var data = {
@@ -145,7 +234,7 @@ function modifica_cajero() {
         console.log(data)
 
     } else if (document.getElementById("cam_ape").checked) {
-        valor = document.getElementById("value").value;
+        valor = document.getElementById("value").value.trim();
 
         var apellido = valor;
         var data = {
@@ -155,7 +244,7 @@ function modifica_cajero() {
         console.log(data)
 
     } else if (document.getElementById("cam_email").checked) {
-        valor = document.getElementById("value").value;
+        valor = document.getElementById("value").value.trim();
 
         var email = valor;
         var data = {
@@ -165,16 +254,14 @@ function modifica_cajero() {
         console.log(data)
 
     } else {
-        valor = document.getElementById("value").value;
+        valor = document.getElementById("value").value.trim();
 
         var phone = valor;
         var data = {
             phone: phone
         };
+        console.log(data)
     }
-
-    console.log(data)
-
 
 
     fetch(url + id + "/", {
@@ -183,14 +270,144 @@ function modifica_cajero() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data),
-    }).then(response => {
-        console.log('Respuesta de sv:' + response)
-        makeFetch();
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se pudo modificar el cajero en el servidor");
+            }
+            return response.json();
+        })
 
-    }).catch(error => {
-        console.log('Error en el servidor:' + error)
+        .then(response => {
+            alert("Cajero modificado");
+            makeFetch();
 
+        })
 
-    });
+        .catch(error => {
+            console.log('Error en el servidor:' + error)
+
+            document.getElementById("mensaje").innerHTML =
+                error.message;
+
+        });
+
+}
+
+function gastoTotPantsPpals() {
+
+    Promise.all([
+        fetch(urlcajas).then(r => r.json()),
+        fetch(urlfacturas).then(r => r.json())
+    ])
+        .then(([cajas, facturas]) => {
+            console.log("cajas", cajas);
+            console.log("facturas", facturas);
+
+            if (cajas.length === 0 || facturas.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            var card = cajas.map(function (caja) {
+                var facturasporCaja = facturas.filter(f => Number(f.aplicada) == Number(caja.id));
+                return `
+
+                <div class="cards">
+                        <img src="../facturas/factura.jpg" alt="" class="custom-image">
+                        <p class= "btn-form1">Caja: ${caja.id}</p>
+                        ${facturasporCaja.map(f => `
+                                <p class="btn-form1">
+                                    Factura: ${f.id} (${f.numFact}) : ${f.importe}
+                                </p>
+                            `).join("")}
+                        <p class= "btn-form1">Saldo: ${caja.saldo}</p>
+                        <p class= "btn-form1">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0)}</p>
+
+                    </div>
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+}
+function gasto_total() {
+
+    Promise.all([
+        fetch(urlcajas).then(r => r.json()),
+        fetch(urlfacturas).then(r => r.json())
+    ])
+        .then(([cajas, facturas]) => {
+            console.log("cajas", cajas);
+            console.log("facturas", facturas);
+
+            if (cajas.length === 0 || facturas.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
+            var card = cajas.map(function (caja) {
+                var facturasporCaja = facturas.filter(f => Number(f.aplicada) == Number(caja.id));
+                return `
+
+                <div class="cards">
+                        <img src="../facturas/factura.jpg" alt="" class="custom-image">
+                        <p class= "btn-form1">Caja: ${caja.id}</p>
+                        ${facturasporCaja.map(f => `
+                                <p class="btn-form1">
+                                    Factura: ${f.id} (${f.numFact}) : ${f.importe}
+                                </p>
+                            `).join("")}
+                        <p class= "btn-form1">Saldo: ${caja.saldo}</p>
+                        <p class= "btn-form1">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0)}</p>
+
+                    </div>
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+}
+
+function saldosppal() {
+    fetch(url).then(Response => {
+        if (!Response.ok) {
+            throw new Error("Error en la solicitud");
+        }
+        return Response.json();
+    })
+
+        .then(data => {
+            console.log(data);
+            var campos = data;
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay cajeros registrados.</h1>";
+                return;
+            }
+
+            var card = campos.map(function (campo) {
+                return `
+                    <div class="cards1">
+                        <img src="../cajeros/cajero.jpg" alt="" class="custom-image">
+                        <h2 class="badge">Num de Cajero: ${campo.id}</h2>
+                        <p class="badge">Nombre: ${campo.name.toUpperCase()} ${campo.last_name.toUpperCase()}</p>
+                        <p class="badge">Correo: ${campo.email.toUpperCase()}</p>
+                        <p class="badge">Telefono: ${campo.phone}</p>
+
+                    </div>
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+        })
+        .catch(error => {
+            console.log(error);
+        });
 
 }

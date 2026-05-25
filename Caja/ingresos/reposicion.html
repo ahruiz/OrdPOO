@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./ingresos.css">
+    <script type="application/javascript" src="./ingresos.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REPOSICION DE FONDOS</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h2>REPOSICION DE FONDOS</h2>
+                    <input class="input-form" type="number" id="caja" placeholder="Número de caja">
+                    <input class="input-form" type="text" id="facturs" placeholder="Facts a reponer">
+                    <input class="input-form" type="number" id="monto" placeholder="Monto">
+                    <input class="input-form" type="text" id="descripcion" placeholder="Descripción">
+                    <button class="btn-form" onclick="makeFetch()">mostrar reposiciónes</button>
+                    <button class="btn-form" onclick="crear_repos()">crear reposición</button>
+                    <button class="btn-form1" onclick="location.href='./ingresos.html'">
+                        <h3>
+                            Volver a Ingresos
+                        </h3>
+                        <button class="btn-form1" onclick="location.href='../menuppal/p_ppal.html'">Volver a
+                            MENU PPAL
+                        </button>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+    <div class="text-card" id="mensaje"></div>
+</body>
+
+</html>

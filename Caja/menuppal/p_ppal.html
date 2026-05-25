@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="./p_ppal.css">
     <script src="./p_ppal.js" type="application/javascript"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,31 +36,94 @@
                         <a class="nav-link" href="../ingresos/ingresos.html">INGRESOS</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto"> <!-- esto es para alinear a la derecha -->
-                    <li class="nav-item">
-                        <span class="nav-link disable text-light">
-                            Ahruiz
-                        </span>
-                    </li>
+                <li class="nav-item dropdown ms-auto"> <!-- esto es para alinear a la derecha -->
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="true">
+                        AYUDA
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                data-bs-target="#acercaModal">Acerca
+                                de</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                data-bs-target="#ayudaModal">Ayuda</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                data-bs-target="#soporteModal">Soporte</a></li>
+                    </ul>
+                </li>
+                <!--
+                <ul class="navbar-nav ms-auto"> 
+                <li class="nav-item">
+                    <span class="nav-link disable text-light">
+                        Ahruiz
+                    </span>
+                </li>
+                -->
                 </ul>
             </div>
         </div>
+        <!-- se adiciona menu desplegable para usuario y logout -->
+        <!-- Contenedor del Dropdown -->
+        <div class="dropdown ms-auto">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userMenu"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <!-- Ícono de Usuario (usando un SVG simple para no depender de librerías externas) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                    class="bi bi-person-circle me-2" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                    <path fill-rule="evenodd"
+                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                </svg>
+            </a>
+
+            <!-- Menú Desplegable -->
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userMenu">
+                <li><span class="dropdown-item-text text-muted small">Conectado como: <strong>
+                            <div class="dropdown-item-text text-muted small" id="element">
+                                <script>
+                                    // Obtener el nombre de usuario del localStorage
+                                    const username = localStorage.getItem('usuario') || 'Usuario';
+                                    let usuarioAobjeto = JSON.parse(username);
+                                    const nombreUsuario = usuarioAobjeto.nombre; // Suponiendo que el objeto tiene una propiedad 'nombre'
+                                    // Mostrar el nombre de usuario en el menú desplegable
+                                    document.getElementById('element').textContent = nombreUsuario;
+                                </script>
+                            </div>
+                        </strong></span></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <!-- Enlace de Logout seguro para Django -->
+                    <button type="btn-logout" class="logout-btn" onclick="fetchusrs()">
+                        Cerrar Sesión
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <!-- hasta este nivel es del menu desplegable y logout  -->
     </nav>
     <div>
         <div class="starter-template">
-            <a href="" title="Menu PPAL"><img class="ppal-cover" src="./logocajach.jpg" alt="Caja Chica">MENU PPAL</a> <!-- con el
+            <a href="../cajas/consulta.html"><img class="ppal-cover" src="./logocajach.jpg" alt="">SALDO DE CAJAS
+                ACTIVAS</a> <!-- con el
             parametro title al pasar el mouse por encima de la imagen, se muestra el título "Menu PPAL" -->
         </div>
         <div class=" starter-template">
-            <a href="../cajeros/cajeros.html" title="Cajeros"><img class="cover" src="./cajero.jpg"
-                    alt="Cajeros">CAJEROS</a> <!-- con el
+            <a href="../cajeros/alta.html" title="Cajeros"><img class="cover" src="./cajero.jpg" alt="">ALTA DE
+                CAJEROS</a> <!-- con el
             parametro title al pasar el mouse por encima de la imagen, se muestra el título "Cajeros"
             # img dentro de a para agregar el link a la imagen...., alt por si se rompe la imagen... -->
-            <a href="../cajas/cajas.html" title="Cajas"><img class="cover" src="./caja_ch.jpg" alt="Cajas">C A J A S</a>
-            <a href="../facturas/facturas.html" title="Facturas"><img class="cover" src="./factura.jpg"
-                    alt="Facturas">FACTURAS</a>
-            <a href="../ingresos/ingresos.html" title="Ingresos"><img class="cover" src="./ingreso.jpg"
-                    alt="Ingresos">INGRESOS</a>
+            <a href="../facturas/alta.html" title="Facturas"><img class="cover" src="./caja_ch.jpg" alt="Cajas">ALTA DE
+                FACTURAS</a>
+            <a href="../cajas/aplic_fact.html" title="Facturas"><img class="cover" src="./factura.jpg"
+                    alt="Facturas">APLICAR FACTURAS</a>
+            <a href="../cajas/gasto_tot.html" title="Ingresos"><img class="cover" src="./ingreso.jpg"
+                    alt="Ingresos">GASTO TOTAL</a>
         </div>
     </div>
     <div class="ticker">
@@ -68,6 +132,85 @@
             Sistema para la gestión eficiente de recursos y gastos menores en tu organización.
         </div>
     </div>
+
+    <!-- popup Acerca de -->
+    <div class="modal fade" id="acercaModal" tabindex="-1" aria-labelledby="acercaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="acercaModalLabel">Acerca de Caja Chica</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        El sistema de <strong>Caja Chica</strong> permite registrar y controlar
+                        los movimientos de efectivo de forma sencilla.
+                    </p>
+                    <p>
+                        Facilita la gestión de gastos, ingresos y responsables,
+                        manteniendo un control claro y ordenado.
+                    </p>
+                    <p>
+                        Su objetivo es brindar <strong>control, transparencia y rapidez</strong>
+                        en la administración diaria.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- popup Ayuda -->
+    <div class="modal fade" id="ayudaModal" tabindex="-1" aria-labelledby="ayudaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ayudaModalLabel">Ayuda - Cómo usar Caja Chica</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Para comenzar a usar el sistema de <strong>Caja Chica</strong>, sigue estos pasos:
+                    </p>
+                    <ol>
+                        <li>Selecciona la sección que deseas gestionar: Cajeros, Cajas, Facturas o Ingresos.</li>
+                        <li>En cada sección, podrás agregar, editar o eliminar registros según tus necesidades.</li>
+                        <li>Utiliza los formularios para ingresar los datos requeridos y guarda los cambios.</li>
+                        <li>Consulta los reportes y estadísticas para mantener un control eficiente de tus recursos.
+                        </li>
+                    </ol>
+                    <p>
+                        Si necesitas asistencia adicional, no dudes en contactar a nuestro equipo de soporte.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- popup Soporte -->
+    <div class="modal fade" id="soporteModal" tabindex="-1" aria-labelledby="soporteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="soporteModalLabel">Soporte Técnico</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Si tienes problemas técnicos o necesitas ayuda con el sistema de <strong>Caja Chica</strong>,
+                        por favor contacta a nuestro equipo de soporte:
+                    </p>
+                    <ul>
+                        <li>Email: <a href="mailto:soporte@cajachica.com">soporte@cajachica.com</a></li>
+                        <li>Responsable del proyecto: Angel Ruiz<a
+                                href="mailto:24070140@uadeo.edu.mx">24070140@uadeo.edu.mx</a></li>
+                        <li>Teléfono: +1 (555) 123-4567</li>
+                        <li>Horario de atención: Lunes a Viernes, 9:00 AM - 6:00 PM</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+    <div class="text-card" id="mensaje"></div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </html>
