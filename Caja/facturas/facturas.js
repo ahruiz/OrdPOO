@@ -29,7 +29,7 @@ function makeFetch() {
                         <h2 class="badge">Factura ID: ${campo.id}</h2>
                         <p class="badge">Num de Factura: ${campo.numFact}</p>
                         <p class="badge">Proveedor: ${(campo.proveedor ? campo.proveedor : "").toUpperCase()}</p>
-                        <p class="badge">Descripción: ${(campo.description ? campo.description : "").toUpperCase()}</p>
+                        <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
                         <p class="badge">Importe: ${campo.importe}</p>
                         <p class="badge">Departamento: ${(campo.departamento ? campo.departamento : "").toUpperCase()}</p>
                         <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>
@@ -76,7 +76,7 @@ function makeFetch1() {
                         <h2 class="badge">Factura ID: ${campo.id}</h2>
                         <p class="badge">Num de Factura: ${campo.numFact}</p>
                         <p class="badge">Proveedor: ${(campo.proveedor || "").toUpperCase()}</p>
-                        <p class="badge">Descripción: ${(campo.description || "").toUpperCase()}</p>
+                        <p class="badge">Descripción: ${(campo.descripcion || "").toUpperCase()}</p>
                         <p class="badge">Importe: ${campo.importe}</p>
                         <p class="badge">Departamento: ${(campo.departamento || "").toUpperCase()}</p>
                         <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>
@@ -123,7 +123,7 @@ function soloFactsPendientes() {
                         <h2 class="badge">Factura ID: ${campo.id}</h2>
                         <p class="badge">Num de Factura: ${campo.numFact}</p>
                         <p class="badge">Proveedor: ${(campo.proveedor || "").toUpperCase()}</p>
-                        <p class="badge">Descripción: ${(campo.description || "").toUpperCase()}</p>
+                        <p class="badge">Descripción: ${(campo.descripcion || "").toUpperCase()}</p>
                         <p class="badge">Importe: ${campo.importe}</p>
                         <p class="badge">Departamento: ${(campo.departamento || "").toUpperCase()}</p>
                         <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>
@@ -141,7 +141,7 @@ function soloFactsPendientes() {
 function crear_fact() {
     var numfact = document.getElementById("numFact").value;
     var proveedor = document.getElementById("proveedor").value;
-    var descripcion = document.getElementById("description").value;
+    var descripcion = document.getElementById("descripcion").value;
     var importe = document.getElementById("importe").value;
     var departamento = document.getElementById("departamento").value;
 
@@ -153,7 +153,7 @@ function crear_fact() {
     var data = {
         numFact: numfact,
         proveedor: proveedor,
-        description: descripcion,
+        descripcion: descripcion,
         importe: Number(importe),
         departamento: departamento
     };
@@ -165,20 +165,26 @@ function crear_fact() {
         },
         body: JSON.stringify(data),
     })
-        .then(response => {
+        .then(async response => {
+
             if (!response.ok) {
-                throw new Error("Error en el servidor");
+
+                const textoError = await response.text();
+
+                console.log("ERROR DJANGO:", textoError);
+
+                throw new Error(textoError);
             }
+
             return response.json();
-        })
-        .then(factura => {
+        }).then(factura => {
             console.log("facturas existentes")
             console.log('Factura creada exitosamente:', factura);
             alert(`Factura creada con ID: ${factura.id}`);
 
             document.getElementById("numFact").value = "";
             document.getElementById("proveedor").value = "";
-            document.getElementById("description").value = "";
+            document.getElementById("descripcion").value = "";
             document.getElementById("importe").value = "";
             document.getElementById("departamento").value = "";
             makeFetch();
@@ -237,12 +243,12 @@ function modifica_fact() {
 
         console.log(data)
 
-    } else if (document.getElementById("description").checked) {
+    } else if (document.getElementById("descripcion").checked) {
         valor = document.getElementById("value").value;
 
-        var description = valor;
+        var descripcion = valor;
         var data = {
-            description: description
+            descripcion: descripcion
         };
 
         console.log(data)
@@ -272,7 +278,7 @@ function modifica_fact() {
         return;
     }
 
-    if (data.proveedor === "" || data.description === "" || data.importe === "" || data.departamento === "") {
+    if (data.proveedor === "" || data.descripcion === "" || data.importe === "" || data.departamento === "") {
         throw new Error("Faltan datos, favor de completar el formulario");
     }
 
@@ -337,7 +343,7 @@ function facturasppal() {
                         <h2 class="badge">Factura ID: ${campo.id}</h2>
                         <p class="badge">Num de Factura: ${campo.numFact}</p>
                         <p class="badge">Proveedor: ${(campo.proveedor ? campo.proveedor : "").toUpperCase()}</p>
-                        <p class="badge">Descripción: ${(campo.description ? campo.description : "").toUpperCase()}</p>
+                        <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
                         <p class="badge">Importe: ${campo.importe}</p>
                         <p class="badge">Departamento: ${(campo.departamento ? campo.departamento : "").toUpperCase()}</p>
                         <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>

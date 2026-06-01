@@ -146,3 +146,6 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

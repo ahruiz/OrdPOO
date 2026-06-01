@@ -1,4 +1,7 @@
+import datetime
+from django.utils import timezone
 import json
+from django.http import JsonResponse
 from turtle import pos
 from webbrowser import get
 from rest_framework import serializers
@@ -218,15 +221,16 @@ class CajaViewSet(viewsets.ModelViewSet):
 
         return Response({
             "caja_id": caja.id,
-            "factura_id": factura.id,
+            "factura_id": factura.id ,
             "Numero de Factura": factura.numFact,
-            "descripcion": factura.description,
+            "descripcion": factura.descripcion,
             "saldo Inicial": caja.saldo_inicial,
             "saldo anterior": caja.saldo + factura.importe,
             "importe": factura.importe,
             "nuevo_saldo": caja.saldo
         })
     
+
 class FacturaViewSet(viewsets.ModelViewSet):
     queryset = Factura.objects.all()
     serializer_class = FacturaSerializer
@@ -246,8 +250,64 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"])
     def reposicion(self, request):
+        caja_id_input = request.data.get("Factura.aplicada", "")
+        monto_repos = request.data.get("Factura.importe", "")               
+        num_factura_input = request.data.get("FacturanumFact") or request.data.get("Factura.numFact", "")
+        descripcion = request.data.get("Factura.descripcion", "")
+        numReposFact = request.data.get("numRepos")
+
+        nom_cajero = request.data.get("Cajero.nombre + Cajero.last_name", "Cajero Desconocido")
+        
+        print(f"--> Backend recibió - Caja: {caja_id_input}, Monto: {monto_repos}, Factura: {num_factura_input}, Descripción: {descripcion}, numRepos: {numReposFact}")
+        
+        if not caja_id_input or not monto_repos or not num_factura_input or not descripcion or not numReposFact:
+            return Response({
+                "error": "Faltan datos obligatorios",
+                "detalles": f"caja: {caja_id_input}, monto: {monto_repos}, factura: {num_factura_input}, descripcion: {descripcion}, numRepos: {numReposFact}"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        caja_obj = get_object_or_404(Factura, aplicada=caja_id_input) #se obtiene el objeto caja_id o da error 404
+        factura_obj = get_object_or_404(Factura, numFact=num_factura_input)
+
+        # 1. Generamos el número único de reposición
+        numReposFact = f"{timezone.now().strftime('%Y%m%d')}{timezone.now().strftime('%H%M')}{caja_obj.id}{factura_obj.importe}{factura_obj.numFact}"                        
+
+        caja = caja_id_input;
+
+        ingreso = ingresoCaja.objects.create(
+            caja=int(caja_obj.aplicada), # <--- Aquí se asigna el ID de la caja a la que se aplicará la factura
+            importe=Decimal(int(monto_repos)),
+            numFact=factura_obj.numFact, # <--- Aquí se asigna el número de factura a la reposición
+            descripcion=descripcion,
+            numRepos=numReposFact
+            )
+        
+        # 3. Actualizamos la factura indicando a qué caja se aplicó y su número de reposición
+        factura_obj.numRepos = numReposFact
+        factura_obj.aplicada = str(caja_obj.id) # <--- Marcamos la factura como aplicada a esa caja
+        factura_obj.save() # <--- AQUÍ SE GUARDA EN LA TABLA DE FACTURAS
+       
+        saldo_actual = Decimal(str(caja_obj.saldo))
+        incremento = Decimal(str(monto_repos))
+        caja_obj.saldo = saldo_actual + incremento
+        caja_obj.save()        
+
+        return Response({ 
+            "nombre cajero": nom_cajero,
+            "saldo anterior": caja_id_input.saldo - Decimal(monto_repos),
+            "monto": ingreso.importe,
+            "descripcion": ingreso.descripcion,
+            "numero de reposicion": ingreso.numRepos,
+            "nuevo_saldo": float(caja_obj.saldo),
+            "facturas": ingreso.numFact,
+            "fecha": ingreso.fecha,
+        }, status=status.HTTP_201_CREATED)
+    
+
+    @action(detail=False, methods=["post"])
+    def repos_inicial(self, request):
         caja_id = request.data.get("caja")
-        monto_repos = request.data.get("monto")               
+        monto_repos = request.data.get("importe")               
         descripcion = request.data.get("descripcion", "")
 
         if not caja_id or not monto_repos:
@@ -261,10 +321,14 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
                         
         ingreso = ingresoCaja.objects.create(
             caja=caja_id,
-            monto=Decimal(monto_repos),
+            importe=Decimal(monto_repos),
             descripcion="Reposicion de caja chica " if descripcion == "" else descripcion
             )
         
+        #el num de reposicion es fecha(aaaammdd) + hora(hhmm) + caja_id 
+        numReposIni = f"{timezone.now().strftime('%Y%m%d')}{timezone.now().strftime('%H%M%S')}{caja_id.id}{monto_repos}"
+        ingreso.numRepos = numReposIni
+        ingreso.save()
 
         caja_id.saldo += Decimal(str(monto_repos))
         caja_id.save()
@@ -272,13 +336,14 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
         return Response({ 
             "nombre cajero": nom_cajero,
             "saldo anterior": caja_id.saldo - Decimal(monto_repos),
-            "monto": ingreso.monto,
+            "importe": ingreso.importe,
             "descripcion": ingreso.descripcion,
+            "numero de reposicion": ingreso.numRepos,
             "nuevo_saldo": caja_id.saldo,
-            "facturas": ingreso.facturs,
+            "facturas": ingreso.numFact,
             "fecha": ingreso.fecha,
         }, status=status.HTTP_201_CREATED)
-        
+
     @action(detail=False, methods=["delete"])
     def borrarRepos(self, request):
         id_ingreso = request.data.get("id")

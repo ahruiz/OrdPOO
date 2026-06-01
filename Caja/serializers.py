@@ -34,20 +34,20 @@ class CajaSerializer(serializers.ModelSerializer):
 class FacturaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Factura
-        fields = "__all__"
+        fields = ["id", "numFact", "proveedor", "descripcion", "importe", "departamento", "aplicada","numRepos"]
 
         extra_kwargs = {
             'aplicada': {'required': False}
         }
 
 class ingresoCajaSerializer(serializers.ModelSerializer):
-    caja = serializers.PrimaryKeyRelatedField(queryset=Caja.objects.all())
+    caja = serializers.PrimaryKeyRelatedField(queryset=Factura.objects.all())
 
     class Meta:
         model = ingresoCaja
-        fields = ["id", "caja", "facturs", "monto", "descripcion", "fecha"]
+        fields = ["id", "caja", "importe", "numFact", "descripcion", "numRepos"]
     
-        extra_kwargs = {"facturs":{"required":False, "allow_null": True}}
+        extra_kwargs = {"numFact":{"required":False, "allow_null": True}}
         
     descripcion = serializers.CharField(
         required=False,

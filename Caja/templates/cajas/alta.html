@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'cajas/cajas.css' %}">
+    <script>window.STATIC_URL = "{% static '' %}";</script>
+    <script type="application/javascript" src="{% static 'cajas/cajas.js' %}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de caja</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h1>Alta de Cajas</h1>
+                    <input class="input-form" type="number" name="cajero" id="cajero"
+                        placeholder="Escribe el ID de la cajero">
+                    <input class="input-form" type="number" name="saldo_inicial" id="saldo_inicial"
+                        placeholder="Escribe el saldo inicial">
+                    <input class="input-form" type="number" name="saldo" id="saldo"
+                        placeholder="Saldo es = SI al crear caja">
+                    <button class="btn-form" onclick="crear_caja()">Crear caja</button>
+                    <button class="btn-form" onclick="makeFetch()">solicitar informacion</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">Volver a
+                        Cajas</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+    <div class="text-card" id="mensaje"></div>
+</body>
+
+</html>

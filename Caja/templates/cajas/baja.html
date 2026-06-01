@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'cajas/cajas.css' %}">
+    <script>window.STATIC_URL = "{% static '' %}";</script>
+    <script type="application/javascript" src="{% static 'cajas/cajas.js' %}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAJA de CAJA</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h1 class="title">Baja de CAJA</h1>
+                    <button class="btn-form" onclick="cajasen0()">Cajas con saldo 0</button>
+                    <button class="btn-form" onclick="cajasactivs()">Cajas activas</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">Volver a
+                        Cajas</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+</body>
+
+</html>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'facturas/facturas.css' %}">
+    <script>window.STATIC_URL = "{% static '' %}"</script>
+    <script type="application/javascript" src="{% static 'facturas/facturas.js' %}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Facturas</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h2>Alta de Facturas</h2>
+                    <input class="input-form" type="text" name="numFact" id="numFact"
+                        title="Las letras se capturan como serie en  la descripcion"
+                        placeholder="Número de Factura(sin letras)">
+                    <input class="input-form" type="text" name="proveedor" id="proveedor" placeholder="Proveedor">
+                    <input class="input-form" type="text" name="descripcion" id="descripcion"
+                        title="La letra de la factura se captura como parte de la descripción"
+                        placeholder="Descripción y serie">
+                    <input class="input-form" type="number" name="importe" id="importe" placeholder="Importe">
+                    <input class="input-form" type="text" name="departamento" id="departamento"
+                        placeholder="Departamento">
+                    <button class="btn-form" onclick="makeFetch()">solicitar informacion</button>
+                    <button class="btn-form" onclick="crear_fact()">Crear Factura</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'facturas' %}'">Volver a
+                        Facturas</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+    <div class="text-card" id="mensaje"></div>
+</body>
+
+</html>

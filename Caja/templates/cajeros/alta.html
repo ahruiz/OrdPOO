@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'cajeros/cajeros.css' %}">
+    <script>window.STATIC_URL = "{% static '' %}";</script>
+    <script type="application/javascript" src="{% static 'cajeros/cajeros.js' %}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de cajero</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h1>Alta de Cajero</h1>
+                    <input class="input-form" type="text" name="nombre" id="nombre" placeholder="Nombre">
+                    <input class="input-form" type="text" name="apellido" id="apellido" placeholder="Apellido">
+                    <input class="input-form" type="email" name="email" id="email" placeholder="Email">
+                    <input class="input-form" type="number" name="phone" id="phone" placeholder="Teléfono">
+                    <button class="btn-form" onclick="makeFetch()">solicitar informacion</button>
+                    <button class="btn-form" onclick="crear_cajero()">Crear cajero</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'cajeros' %}'">Volver a
+                        Cajeros
+                    </button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+    <div class="text-card" id="mensaje"></div>
+</body>
+
+</html>

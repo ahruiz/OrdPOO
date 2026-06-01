@@ -64,20 +64,21 @@ class Caja(models.Model):
 class Factura(models.Model):
     numFact = models.CharField(max_length=100, unique=True)
     proveedor = models.CharField(max_length=200)
-    description = models.TextField()
+    descripcion = models.TextField()
     importe = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     departamento = models.CharField(max_length=200)
 
     aplicada = models.DecimalField(max_digits=10, decimal_places=0, default=Decimal('0'))
-    numRepos = models.ForeignKey('ingresoCaja', on_delete=models.SET_NULL, null=True, blank=True)
+    numRepos = models.CharField(max_length=55, default="0") # Campo para almacenar el ID de reposición asociado a esta factura, si existe
     
     def __str__(self):
-        return f"Factura {self.id}"
+        return f"Factura {self.id}" 
         
 class ingresoCaja(models.Model):
-    caja = models.ForeignKey(Caja, on_delete=models.CASCADE)
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
-    facturs = models.CharField(max_length=255) # Campo para almacenar las facturas asociadas como una cadena de texto
+    caja = models.ForeignKey(Factura, on_delete=models.CASCADE)
+    importe = models.DecimalField(max_digits=10, decimal_places=2)
+    numFact = models.CharField(max_length=255) # Campo para almacenar las facturas asociadas como una cadena de texto
     fecha = models.DateTimeField(auto_now_add=True)
     descripcion = models.CharField(default="Reposición de caja", max_length=255)
+    numRepos = models.CharField(max_length=55, default="0")

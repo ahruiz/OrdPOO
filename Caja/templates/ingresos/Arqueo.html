@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'ingresos/ingresos.css' %}">
+    <script>window.STATIC_URL = "{% static '' %}"</script>
+    <script type="application/javascript" src="{% static 'ingresos/ingresos.js' %}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A R Q U E O S</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h2 class="title">Arqueos por CAJA</h2>
+                    <button class="btn-form" onclick="solicitarDatosArq()">Solicitar informacion</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'ingresos' %}'">Volver a
+                        Ingresos</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+</body>
+
+</html>
+
+</html>

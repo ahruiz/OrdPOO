@@ -3,6 +3,10 @@ var urlcajas = "http://127.0.0.1:8000/api/cajas/"
 var urlcajeros = "http://127.0.0.1:8000/api/cajeros/"
 var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
 
+const STATIC_URL = window.STATIC_URL || '/static/';
+const CAJAS_IMAGES = STATIC_URL + 'cajas/';
+const FACTURAS_IMAGES = STATIC_URL + 'facturas/';
+
 let cajasexistentes = [];
 
 function makeFetch() {
@@ -23,7 +27,7 @@ function makeFetch() {
                 var cajero = cajeros.find(c => c.id == caja.Cajero);
                 return `
                     <div class="cards">
-                        <img src="../cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
                         <h2 class="badge">Num de Caja: ${caja.id}</h2>
                         <p class="badge">Cajero: ${caja.Cajero}</p>
                         <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
@@ -68,7 +72,7 @@ function cajasen0() {
             var card = campos.map(function (campo) {
                 return `
                     <div class="cards">
-                        <img src="./caja_ch.jpg" alt="" class="custom-image">
+                        <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
                         <h2 class="badge">Num de Caja: ${campo.id}</h2>
                         <p class="badge">Num de cajero: ${campo.Cajero}</p>
                         <p class="badge">Saldo inicial: ${campo.saldo_inicial}</p>
@@ -102,20 +106,20 @@ function cajasactivs() {
             console.log(data);
             var campos = data;
 
-            if (campos.length === 0) {
-                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
-                return;
-            }
-
             cajasactivas = campos.filter(c => c.saldo !== '0.00'); //
-            data = cajasactivas; // Sobrescribimos data con las cajas que tienen saldo 0 para mostrar solo esas
+            data = cajasactivas; // Sobrescribimos data con las cajas que tienen saldo diferente de 0 para mostrar solo esas
             console.log(data);
             var campos = data;
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay cajas activas disponibles.</h1>";
+                return;
+            }
 
             var card = campos.map(function (campo) {
                 return `
                     <div class="cards">
-                        <img src="./caja_ch.jpg" alt="" class="custom-image">
+                        <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
                         <h2 class="badge">Num de Caja: ${campo.id}</h2>
                         <p class="badge">Num de cajero: ${campo.Cajero}</p>
                         <p class="badge">Saldo inicial: ${campo.saldo_inicial}</p>
@@ -134,45 +138,83 @@ function cajasactivs() {
 
 
 function crear_caja() {
+
     var cajero = document.getElementById("cajero").value;
     var saldo_inicial = document.getElementById("saldo_inicial").value;
     var saldo = document.getElementById("saldo").value;
 
-    var data = {
-        Cajero: cajero,
-        saldo_inicial: saldo_inicial,
-        saldo: saldo
-    };
-
+    // VALIDAR CAMPOS VACÍOS
     if (cajero === "" || saldo_inicial === "" || saldo === "") {
         alert("Faltan datos, favor de completar el formulario");
         return;
     }
 
+    // VALIDAR NUMÉRICOS
     if (isNaN(cajero) || isNaN(saldo_inicial) || isNaN(saldo)) {
         alert("Los campos de cajero, saldo inicial y saldo deben ser numéricos");
         return;
     }
 
-    fetch(urlcajas, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-    })
-        .then(response => {
-            if (!data.Cajero === "") {
-                throw new Error("Debe ingresar un numero de cajero");
+    // BUSCAR CAJEROS EN LA BD
+    fetch(urlcajeros)
+        .then(response => response.json())
+        .then(cajeros => {
+
+            console.log("Cajeros existentes:", cajeros);
+
+            // VALIDAR SI EXISTE EL CAJERO
+            let cajeroExiste = cajeros.find(
+                c => String(c.id) === String(cajero)
+            );
+
+            if (!cajeroExiste) {
+                alert("El cajero no existe en la base de datos");
+                return;
             }
+
+            // DATOS PARA CREAR LA CAJA
+            var data = {
+                Cajero: cajero,
+                saldo_inicial: saldo_inicial,
+                saldo: saldo
+            };
+
+            // CREAR CAJA
+            return fetch(urlcajas, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            });
+
+        })
+        .then(response => {
+
+            // SI EL RETURN SE CANCELÓ ARRIBA
+            if (!response) return;
+
+            if (!response.ok) {
+                throw new Error("Error al crear la caja");
+            }
+
             return response.json();
+
         })
         .then(data => {
+
+            if (!data) return;
+
             console.log('Respuesta servidor:', data);
+
+            alert("Caja creada correctamente");
+
             makeFetch();
+
         })
         .catch(error => {
-            console.log('Error en el servidor:' + error)
+
+            console.log('Error en el servidor:', error);
 
             document.getElementById("mensaje").innerHTML =
                 error.message;
@@ -180,7 +222,6 @@ function crear_caja() {
         });
 
 }
-
 
 function borrarCajero(id) {
 
@@ -234,11 +275,11 @@ function mostrar_fact() {
                 return `
 
                 <div class="cards">
-                        <img src="../facturas/factura.jpg" alt="" class="custom-image">
+                        <img src="${FACTURAS_IMAGES}factura.jpg" alt="" class="custom-image">
                         <h2 class="badge">ID Factura: ${factura.id}</h2>
                         <p class="badge">Num de factura: ${factura.numFact}</p>
                         <p class="badge">Proveedor: ${factura.proveedor.toUpperCase()}</p>
-                        <p class="badge">Description: ${factura.description.toUpperCase()}</p>
+                        <p class="badge">Descripción: ${factura.descripcion.toUpperCase()}</p>
                         <p class="badge">Importe: ${factura.importe}</p>
                         <p class="badge">Departamento: ${factura.departamento.toUpperCase()}</p>
                         <p class="badge"><h2>${factura.aplicada ? `Aplicada en Caja: ${factura.aplicada}` : 0}</h2></p>
@@ -363,7 +404,7 @@ function gasto_total() {
                 return `
 
                 <div class="cards">
-                        <img src="../facturas/factura.jpg" alt="" class="custom-image">
+                        <img src="${FACTURAS_IMAGES}factura.jpg" alt="" class="custom-image">
                         <p class= "btn-form1">Caja: ${caja.id}</p>
                         ${facturasporCaja.map(f => `
                                 <p class="btn-form1">
@@ -371,7 +412,7 @@ function gasto_total() {
                                 </p>
                             `).join("")}
                         <p class= "btn-form1">Saldo: ${caja.saldo}</p>
-                        <p class= "btn-form">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0)}</p>
+                        <p class= "btn-form">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0).toFixed(2)}</p>
 
                     </div>
             `}).join("");
@@ -402,7 +443,7 @@ function cajasppal() {
                 var cajero = cajeros.find(c => c.id == caja.Cajero);
                 return `
                     <div class="cards1">
-                        <img src="../cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
                         <h2 class="badge">Num de Caja: ${caja.id}</h2>
                         <p class="badge">Cajero: ${caja.Cajero}</p>
                         <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
