@@ -775,7 +775,6 @@ function imprimirArqueo(button) {
 }
 
 function procesarBajaCero(cajaId) {
-    window.focus();
     if (!confirm(`¿Estás completamente seguro de dar de baja la Caja N° ${cajaId}?\nEsta acción mandará su saldo permanentemente a $0.00 en Django.`)) {
         return;
     }

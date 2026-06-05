@@ -148,6 +148,11 @@ function crear_fact() {
     var importe = document.getElementById("importe").value;
     var departamento = document.getElementById("departamento").value;
 
+    // si numFact no es numeroco mandar una alerta y regresar
+    if (isNaN(numfact) || numfact.trim() === "") {
+        alert("El número de factura debe ser un valor numérico válido.");
+        return;
+    }
     if (facturasexistentes.includes(numfact)) {
         alert("El número de factura " + numfact + " ya existe en el sistema. Refrescando la lista...");
         return;

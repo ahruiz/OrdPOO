@@ -21,12 +21,12 @@ function makeFetch() {
             cajasexistentes = cajas; // Guardamos las cajas con todos sus datos para futuras referencias
             cajerosexistentes = cajeros; // Guardamos los cajeros con todos sus datos para futuras referencias
             var card = cajas.map(function (caja) {
-                var cajero = cajeros.find(c => c.id == caja.Cajero);
-                return `
+                var cajero = cajeros.find(c => c.id == caja.id);
+                return ` 
                     <div class="cards">
-                        <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Caja: ${caja.id}</h2>
-                        <p class="badge">Cajero: ${caja.cajero}</p>
+                        <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image"> 
+                        <h2 class="badge">Num de Caja: ${cajero ? cajero.id : "Desconocido"}</h2>
+                        <p class="badge">Cajero: ${caja.id}</p>
                         <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
                         <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
                         <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
@@ -202,6 +202,9 @@ function crear_caja() {
             if (!data) return;
             console.log('Respuesta servidor:', data);
             alert("Caja creada correctamente");
+            document.getElementById("cajero").value = "";
+            document.getElementById("saldo_inicial").value = "";
+            document.getElementById("saldo").value = "";
             makeFetch();
         })
         .catch(error => {
@@ -263,7 +266,7 @@ function mostrar_fact() {
                 return `
 
                 <div class="cards">
-                        <img src="../facturas/factura.jpg" alt="" class="custom-image">
+                        <img src="/static/facturas/factura.jpg" alt="" class="custom-image">
                         <h2 class="badge">ID Factura: ${factura.id}</h2>
                         <p class="badge">Num de factura: ${factura.numFact}</p>
                         <p class="badge">Proveedor: ${factura.proveedor.toUpperCase()}</p>
@@ -282,7 +285,7 @@ function mostrar_fact() {
                         >
                             ${estaAplicada ? 'Aplicada' : 'Aplicar factura'}
                         </button>                        
-                        <p class= "btn-form1">Saldo: ${cajas.map(c => `<option value="${c.saldo}">caja ${factura.aplicada || factura.aplicada}: ${c.saldo}</option>`).join("")}</p>
+                        <p class= "btn-form1">Saldo: ${cajas.map(c => `<option value="${c.saldo}">caja ${c.id}: ${c.saldo}</option>`).join("")}</p>
 
                     </div>
             `}).join("");
@@ -392,7 +395,7 @@ function gasto_total() {
                 return `
 
                 <div class="cards">
-                        <img src="../facturas/factura.jpg" alt="" class="custom-image">
+                        <img src="/static/facturas/factura.jpg" alt="" class="custom-image">
                         <p class= "btn-form1">Caja: ${caja.id}</p>
                         ${facturasporCaja.map(f => `
                                 <p class="btn-form1">
@@ -431,7 +434,7 @@ function cajasppal() {
                 var cajero = cajeros.find(c => c.id == caja.Cajero);
                 return `
                     <div class="cards1">
-                        <img src="../cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <img src="static/cajas/caja_ch.jpg" alt="" class="custom-image">
                         <h2 class="badge">Num de Caja: ${caja.id}</h2>
                         <p class="badge">Cajero: ${caja.Cajero}</p>
                         <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
