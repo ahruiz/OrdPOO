@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'facturas/facturas.css' %}">
+    <script>window.STATIC_URL = "{% static '' %}"</script>
+    <script type="application/javascript" src="{% static 'facturas/facturas.js' %}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Modificación de factura</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h1>Modificación de Factura</h1>
+                    <input class="input-form" type="number" name="id" id="id"
+                        placeholder="ID de la factura a modificar">
+                    <p class="text-card">Campo a modificar</p>
+                    <div id="type">
+                        <div><input type="radio" name="camp_mod" id="numFact" value="Numero de factura" checked>
+                            Número de
+                            Factura</div>
+                        <div><input type="radio" name="camp_mod" id="proveedor" value="proveedor"> Proveedor</div>
+                        <div><input type="radio" name="camp_mod" id="descripcion" value="descripcion">
+                            Descripción</div>
+                        <div><input type="radio" name="camp_mod" id="importe" value="importe"> Importe</div>
+                        <div><input type="radio" name="camp_mod" id="departamento" value="departamento">
+                            Departamento</div>
+                    </div>
+                    <input class="input-form" type="text" name="value" id="value" placeholder="Nuevo valor">
+                    <button class="btn-form1" onclick="soloFactsPendientes()">solo facts pendientes</button>
+                    <button class="btn-form" onclick="modifica_fact()">Modificar fact</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'facturas' %}'">Volver a
+                        Facturas</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+</body>
+
+</html>

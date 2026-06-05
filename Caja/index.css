@@ -1,0 +1,63 @@
+.container {
+    height: 85vh;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10%;
+    background-color: rgb(221, 11, 60);
+
+}
+
+.input-form {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    padding: 10px;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #1d9d61;
+    border-radius: 5px;
+}
+
+.cardo {
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+
+}
+
+.card {
+    width: 250px;
+    height: 500px;
+    background-color: beige;
+    padding: 10px;
+}
+
+.centrar {
+    border-radius: 50%;
+    height: 200px;
+    width: 200px;
+    align-items: center;
+}
+
+.custom-image {
+    border-radius: 50%;
+    height: 200px;
+    width: 200px;
+
+}
+
+.badge {
+    padding: 10px;
+    background-color: aqua;
+}

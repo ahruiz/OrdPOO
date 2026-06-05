@@ -1,0 +1,153 @@
+PROYECTO DE PROG ORIENTADA A OBJETOS
+
+CAJA CHICA(1ra etapa)
+
+Registro de FONDO INICIAL, GASTOS y REPOSICIONES(caja chica)
+
+Control de ingresos y gastos en el que primeramente
+registremos el FONDO INICIAL que tenemos en el momento de hacer uso
+de este softw y le demos seguimiento de acuerdo a lo los gastos 
+(FACTURAS) que vamos a considerar como imprevistos o que no se 
+programan o que son espontaneos (surgen como consecuencia de ...).
+La idea es que una vez que estemos cerca de agotar el fondo inicial
+efectuemos un ingreso(REPOSICION) a la caja chica para reponer el dinero.
+
+MEJORAS(2da etapa)
+bitacora
+captura de imagen para un manejo mas eficiente y seguro.
+	En esta seccion se captura el texto de la imagen y se procesa
+	conforme a lo indicado en la 1ra etapa.
+Generacion de mensajes PUSH para indicar que se estan agotando los
+fondos, incluso se podria cambiar el color del ICONO entre los
+colores entre verde, amarillo y rojo dependiendo del estatus de la
+caja chica.
+
+
+Ocupamos, como minimo:
+
+cajero
+	nombre
+	apellido
+	email
+	phone
+	
+caja
+	cajero responsable(id)
+	saldo inicial
+	saldo
+	
+factura(egreso)
+	Proveedor
+	descripcion
+	importe
+	departamento
+	
+ingreso
+	caja
+	monto
+	fecha
+	descripcion
+
+
+
+# actividades de la caja chica
+#__________________________________________________
+# crear cajero
+'''
+****************** post: http://127.0.0.1:8000/api/cajeros/
+jason:
+	{ 
+	  "name": "Angel",
+	  "last_name": "Ruiz",
+	  "email": "Ahruiz0@gmail.com",
+	  "phone": "7771234567"
+	}
+'''--------------------------------------------------------------------------------->>>>>>>>> pendientes de cajeros: indicacion de color para caja asignada
+
+# crear caja
+'''
+****************** post: http://127.0.0.1:8000/api/cajas/
+jason:
+	{ 
+	  "cajero": 1
+	}
+'''---------------------------------------------------------------------------------->>>>>>>>> pendientes de caja: indicacion de color para saldomenor, saldo medio y saldo normal
+
+# capturamos factura
+'''
+****************** post: http://127.0.0.1:8000/api/facturas/ 
+jason:
+	{
+		"proveedor": "Home Depot",
+		"description": "fact:7789...Compra de Estantes",
+		"importe": 1299.22,
+		"departamento": "Almacen"
+	}
+
+		"factura_id": factura.id,
+		"descripcion": factura.description,
+		"saldo Inicial": caja.saldo_inicial,
+		"saldo anterior": caja.saldo + factura.importe,
+		"importe": factura.importe,
+		"nuevo_saldo": caja.saldo	
+'''
+
+# aplicar factura
+'''
+****************** post: http://127.0.0.1:8000/api/cajas/1/aplic_fact/
+jason:
+	{
+		"factura_id": 1
+	}
+'''
+
+# provocar saldo insuficiente
+'''
+se da cuando el importe de las facturas es mayor al saldo actual de la caja'''
+
+# consultar total de gastos y total de ingresos
+'''
+http://127.0.0.1:8000/api/cajas/1/gasto_total/
+http://127.0.0.1:8000/api/ingresos/ingreso_total/
+'''
+
+# agregar ingreso a la caja (reposicion)
+''' en el paso anterior consuktamos el gasto total y esa es la cantidad que vamos a reponer
+****************post: http://127.0.0.1:8000/api/ingresos/reposicion/
+json
+    {
+        "caja_id": 1,
+        "monto": 0.98,
+    }
+'''
+
+# consultar caja (saldo) y cajero
+'''
+************** get: http://127.0.0.1:8000/api/cajas/
+************** get: http://127.0.0.1:8000/api/cajeros/
+'''
+
+# consultar historial de ingresos y gastos
+'''
+**************** get: http://127.0.0.1:8000/api/facturas/
+**************** get: http://127.0.0.1:8000/api/ingresos/
+tambien los podemos ver por caja:
+**************** get: http://127.0.0.1:8000/api/cajas/1/gasto_total/
+o por ingresos:
+**************** get: http://127.0.0.1:8000/api/ingresos/ingreso_total/
+'''
+
+# eliminar registros (cajero, caja, factura, ingreso)
+'''
+**************** delete: http://127.0.0.1:8000/api/facturas/4/
+'''
+
+# modificar datos (cajero, caja, factura, ingreso) 
+'''
+**************** patch: http://127.0.0.1:8000/api/facturas/2/
+json
+    {
+        "monto": 2000.00,
+    }
+'''
+

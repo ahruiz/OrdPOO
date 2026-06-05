@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tríptico Interactivo - El ABC de la Caja Chica</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos de Lucide (vía CDN de componentes ligeros) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f0fdf4; /* Fondo verde muy claro, ecológico y fresco */
+        }
+        
+        h1, h2, h3, .font-display {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Simulación de pliegue de tríptico */
+        .panel-transition {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Estilos de impresión para doblar el tríptico físico */
+        @media print {
+            body {
+                background-color: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-page {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 15px !important;
+                page-break-after: always;
+                width: 297mm; /* A4 Horizontal */
+                height: 210mm;
+                padding: 10mm !important;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- -->
+    <!-- Encabezado / Controles (No imprimibles) -->
+    <header class="no-print bg-emerald-900 text-white shadow-md p-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-400 text-emerald-950 p-2 rounded-lg font-bold">
+                    <i data-lucide="wallet" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight">Caja Chica para Todos</h1>
+                    <p class="text-xs text-emerald-200">Guía interactiva paso a paso para principiantes</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap gap-2">
+                <button onclick="switchView('exterior')" id="btn-exterior" class="px-4 py-2 rounded-full font-bold text-sm transition-all bg-amber-400 text-emerald-950 shadow-md transform hover:scale-105">
+                    📖 Cara Exterior (Portada/Conceptos)
+                </button>
+                <button onclick="switchView('interior')" id="btn-interior" class="px-4 py-2 rounded-full font-bold text-sm transition-all bg-emerald-800 text-emerald-100 hover:bg-emerald-700">
+                    💡 Cara Interior (Paso a Paso)
+                </button>
+                <button onclick="window.print()" class="px-4 py-2 rounded-full font-bold text-sm bg-slate-700 hover:bg-slate-600 text-white transition-all flex items-center gap-2">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Imprimir Tríptico
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- -->
+    <!-- Contenido Principal: Tríptico Digital -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8 flex items-center justify-center">
+        
+        <!-- CARA EXTERIOR (Tríptico Plegado - Portada, Contraportada, Introducción) -->
+        <div id="cara-exterior" class="w-full grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-emerald-500 panel-transition">
+            
+            <!-- Panel 1: Contraportada (El Guardián y Contacto) -->
+            <div class="flex flex-col justify-between bg-gradient-to-b from-emerald-50 to-emerald-100/50 p-6 rounded-2xl border border-emerald-200 relative overflow-hidden">
+                <div class="absolute -top-10 -left-10 w-32 h-32 bg-emerald-200/40 rounded-full blur-2xl"></div>
+                
+                <div>
+                    <span class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">La Regla de Oro</span>
+                    <h3 class="text-2xl font-bold text-emerald-900 mt-4 mb-3">¿Quién cuida el dinero?</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                        Toda Caja Chica necesita un <strong>Responsable Único</strong> (el custodio). Si todos meten la mano, las cuentas jamás van a cuadrar.
+                    </p>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm mb-4">
+                        <h4 class="font-bold text-emerald-800 text-xs uppercase tracking-wider mb-2 flex items-center gap-1">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i> Mandamientos del Responsable
+                        </h4>
+                        <!-- Lista reordenada a renglones separados para evitar confusiones de lectura -->
+                        <ul class="text-xs space-y-3 text-slate-600">
+                            <li class="flex flex-col border-b border-emerald-100 pb-2">
+                                <span class="font-bold text-emerald-900">✅ No prestar</span>
+                                <span class="text-slate-500 mt-0.5">La Caja Chica no es un banco personal para préstamos de ningún tipo.</span>
+                            </li>
+                            <li class="flex flex-col border-b border-emerald-100 pb-2">
+                                <span class="font-bold text-emerald-900">✅ Exigir comprobante</span>
+                                <span class="text-slate-500 mt-0.5">Sin un papel de respaldo válido (nota o factura), no sale ni un centavo.</span>
+                            </li>
+                            <li class="flex flex-col">
+                                <span class="font-bold text-emerald-900">✅ Registrar al instante</span>
+                                <span class="text-slate-500 mt-0.5">El olvido es el mayor enemigo del arqueo. Anota todo de inmediato.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-emerald-200 text-center">
+                    <div class="inline-block p-2 bg-amber-100 rounded-full mb-2">
+                        <i data-lucide="lightbulb" class="w-6 h-6 text-amber-600"></i>
+                    </div>
+                    <p class="text-xs italic text-slate-500">"El diablo está en los detalles, y la quiebra en los gastos hormiga que nadie anota."</p>
+                </div>
+            </div>
+
+            <!-- -->
+            <!-- Panel 2: Introducción (¿Qué es y para qué sirve?) -->
+            <div class="flex flex-col justify-between bg-gradient-to-b from-amber-50 to-amber-100/30 p-6 rounded-2xl border border-amber-200 relative overflow-hidden">
+                <div class="absolute top-1/2 -right-10 w-24 h-24 bg-amber-200/30 rounded-full blur-xl"></div>
+                
+                <div>
+                    <span class="bg-amber-500 text-emerald-950 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Concepto Básico</span>
+                    <h3 class="text-2xl font-bold text-amber-900 mt-4 mb-3">¿Qué rayos es la Caja Chica?</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                        Imagina que es el <strong>monedero de emergencias</strong> de tu casa, pero en la oficina o negocio. Es una cantidad pequeña de dinero en efectivo reservada para compras urgentes del día a día.
+                    </p>
+
+                    <div class="space-y-3">
+                        <div class="flex gap-3 items-start">
+                            <div class="bg-emerald-600 text-white p-1.5 rounded-lg mt-0.5">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">Gastos No Programados</h4>
+                                <p class="text-xs text-slate-500">Comprar un foco de repuesto o pagar un flete de última hora.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <div class="bg-emerald-600 text-white p-1.5 rounded-lg mt-0.5">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">Inmediatez Absoluta</h4>
+                                <p class="text-xs text-slate-500">Evita hacer todo un proceso de transferencia bancaria para cosas de bajo valor.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cita Destacada sobre gastos inesperados -->
+                <div class="bg-emerald-900 text-emerald-50 p-4 rounded-xl mt-6 relative">
+                    <span class="absolute right-3 top-2 text-4xl font-serif text-emerald-700">“</span>
+                    <p class="text-xs italic leading-relaxed relative z-10 font-medium">
+                        "Un negocio que no controla sus imprevistos menores, gasta fortunas en apagar incendios que pudieron solucionarse con un monedero ordenado."
+                    </p>
+                    <span class="block text-right text-[10px] text-amber-300 font-bold mt-2">— Regla del Control de Costos</span>
+                </div>
+            </div>
+
+            <!-- -->
+            <!-- Panel 3: Portada Principal (Llamativa y Visual - Con la misma paleta que la Regla de Oro) -->
+            <div class="flex flex-col justify-between bg-gradient-to-b from-emerald-50 to-emerald-100/50 p-6 rounded-2xl border-4 border-amber-400 relative overflow-hidden shadow-inner">
+                <!-- Decoración de fondo: Esfera traslúcida y difuminada adaptada a tonos suaves -->
+                <div class="absolute -bottom-16 -right-16 w-48 h-48 bg-emerald-800/40 rounded-full blur-xl z-0"></div>
+                <div class="absolute top-10 right-10 w-20 h-20 bg-amber-400/20 rounded-full blur-lg z-0"></div>
+                
+                <div class="text-center pt-4 relative z-10">
+                    <span class="bg-amber-400 text-emerald-950 text-xs font-black tracking-widest px-4 py-1.5 rounded-full uppercase shadow-md inline-block">¡Súper Fácil!</span>
+                    <h2 class="text-4xl font-extrabold mt-6 leading-tight text-emerald-950">
+                        Guía Práctica <br><span class="text-amber-600">Caja Chica</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-3 font-medium">De neófito a experto en 5 minutos</p>
+                </div>
+
+                <!-- Espacio central ajustado con la imagen caja_ch.svg -->
+                <div class="my-6 flex justify-center relative z-10">
+                    <div class="bg-white/80 p-4 rounded-3xl border border-emerald-200 shadow-xl inline-flex flex-col items-center max-w-[200px]">
+                        <img src="caja_ch.svg" alt="Caja Chica Fuerte" class="w-32 h-32 object-contain" onerror="this.onerror=null; this.src='https://placehold.co/128x128/f0fdf4/065f46?text=Caja+Chica';">
+                        <div class="flex gap-1 mt-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cita de Sabiduría Financiera: Totalmente visible y en excelente contraste -->
+                <div class="text-center pb-2 relative z-10 bg-white/45 p-2 rounded-xl backdrop-blur-sm border border-emerald-100/60 shadow-sm">
+                    <p class="text-[10px] text-emerald-800 uppercase tracking-widest font-bold mb-1">Sabiduría Financiera</p>
+                    <p class="text-xs italic text-slate-800 font-semibold">"Cuida de los pequeños centavos; los billetes grandes se cuidarán solos."</p>
+                    <span class="text-[9px] block text-emerald-900 font-bold mt-1">— Benjamin Franklin</span>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- -->
+        <!-- CARA INTERIOR (El Proceso de la Caja Chica - Acceso, Pantalla Principal y Arqueo) -->
+        <div id="cara-interior" class="w-full hidden grid-cols-1 md:grid-cols-3 gap-6 bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-amber-400 panel-transition">
+            
+            <!-- Panel 4: PASO 1 - Acceso Seguro -->
+            <div class="flex flex-col justify-between bg-gradient-to-b from-slate-50 to-slate-100 p-6 rounded-2xl border border-slate-200">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="bg-emerald-800 text-white text-xs font-bold px-3 py-1 rounded-full">PASO 1</span>
+                        <span class="text-xs text-slate-500 font-bold flex items-center gap-1"><i data-lucide="lock" class="w-3.5 h-3.5"></i> Control de Acceso</span>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold text-slate-800 mb-2">El Acceso y la Llave</h3>
+                    <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                        Para registrar gastos de forma digital, el custodio debe entrar con un usuario y contraseña únicos. La seguridad evita "descuadres fantasma".
+                    </p>
+
+                    <!-- Simulador de Login -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-300 shadow-inner">
+                        <p class="text-center font-bold text-xs text-emerald-800 mb-3 uppercase tracking-wider">🔒 Simula tu Inicio de Sesión</p>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-500">Usuario Custodio</label>
+                                <input type="text" value="juan.cajachica" disabled class="w-full bg-slate-100 text-xs px-2.5 py-1.5 rounded border border-slate-300 text-slate-600 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold text-slate-500">Contraseña Financiera</label>
+                                <div class="relative">
+                                    <input id="login-pass" type="password" value="••••••••" disabled class="w-full bg-slate-100 text-xs px-2.5 py-1.5 rounded border border-slate-300 text-slate-600 font-mono">
+                                    <button onclick="togglePassword()" class="absolute right-2 top-2 text-slate-400 hover:text-emerald-700">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5" id="pass-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button onclick="simularAcceso()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 rounded shadow transition-all mt-2 uppercase tracking-wider">
+                                Ingresar al Panel ➔
+                            </button>
+                            <p id="acceso-feedback" class="text-[10px] text-center text-emerald-600 font-bold hidden">¡Bienvenido, Custodio Autorizado!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                    <p class="text-[11px] text-emerald-950 font-semibold flex items-center gap-1.5">
+                        <i data-lucide="info" class="w-4 h-4 text-emerald-600"></i> ¿Por qué importa el acceso?
+                    </p>
+                    <p class="text-[10px] text-slate-600 mt-1">
+                        Cada retiro o ingreso debe llevar nombre, apellido y hora del custodio para evitar la pérdida del rastro del efectivo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- -->
+            <!-- Panel 5: PASO 2 - La Pantalla Principal Interactiva (Ahora con el mismo fondo que la Regla de Oro) -->
+            <div class="flex flex-col justify-between bg-gradient-to-b from-emerald-50 to-emerald-100/50 text-slate-800 p-6 rounded-2xl border border-emerald-200 shadow-xl">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="bg-amber-400 text-emerald-950 text-xs font-bold px-3 py-1 rounded-full">PASO 2</span>
+                        <span class="text-xs text-emerald-800 font-bold flex items-center gap-1"><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> El Tablero</span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-emerald-950 mb-2">Pantalla Principal</h3>
+                    <p class="text-xs text-slate-600 mb-4">
+                        ¡Este es tu panel de control! Aquí visualizas el saldo actual y puedes registrar "Gastos No Programados" sobre la marcha.
+                    </p>
+
+                    <!-- Mock de Pantalla Digital Interactiva -->
+                    <div class="bg-slate-900 rounded-xl p-4 border border-emerald-500/50 shadow-2xl">
+                        <!-- Saldo Dinámico -->
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                            <div>
+                                <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Fondo Total Autorizado</p>
+                                <p class="text-xs font-bold text-slate-300">$2,000.00 MXN</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[9px] text-emerald-400 uppercase font-bold tracking-wider">Saldo Efectivo Hoy</p>
+                                <p class="text-base font-black text-amber-300" id="saldo-dinamico">$1,450.00</p>
+                            </div>
+                        </div>
+
+                        <!-- Mini Historial -->
+                        <div class="mb-3">
+                            <p class="text-[9px] text-slate-400 uppercase font-bold mb-1">Últimos Gastos Registrados</p>
+                            <div id="historial-gastos" class="space-y-1.5 max-h-20 overflow-y-auto pr-1">
+                                <div class="flex justify-between text-[10px] bg-slate-800/50 p-1.5 rounded">
+                                    <span class="text-slate-300">💡 Foco Oficina</span>
+                                    <span class="text-amber-400 font-bold">-$150.00</span>
+                                </div>
+                                <div class="flex justify-between text-[10px] bg-slate-800/50 p-1.5 rounded">
+                                    <span class="text-slate-300">📦 Envío DHL urgente</span>
+                                    <span class="text-amber-400 font-bold">-$400.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón para añadir un imprevisto -->
+                        <button onclick="agregarGastoInesperado()" class="w-full bg-amber-400 hover:bg-amber-300 text-emerald-950 text-[10px] font-black py-1.5 rounded uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all">
+                            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Registrar Gasto Imprevisto
+                        </button>
+
+                        <!-- Imagen ingreso.jpg insertada justo debajo del botón con ajustes necesarios -->
+                        <div class="mt-3 overflow-hidden rounded-lg border border-slate-700 shadow-sm">
+                            <img src="ingreso.jpg" alt="Billetes y monedas de efectivo" class="w-full h-24 object-cover object-center hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/400x150/1e293b/a3e635?text=Efectivo+de+Caja';">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-emerald-200">
+                    <p class="text-[10px] text-emerald-800 italic">
+                        💡 "El saldo disponible siempre debe ser igual al Fondo Total menos los comprobantes de gastos."
+                    </p>
+                </div>
+            </div>
+
+            <!-- -->
+            <!-- Panel 6: PASO 3 - El Arqueo de Caja (Simulador de Monedas/Billetes) -->
+            <div class="flex flex-col justify-between bg-gradient-to-b from-amber-50 to-amber-100 p-6 rounded-2xl border border-amber-300">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="bg-emerald-800 text-white text-xs font-bold px-3 py-1 rounded-full">PASO 3</span>
+                        <span class="text-xs text-amber-800 font-bold flex items-center gap-1"><i data-lucide="scale" class="w-3.5 h-3.5"></i> Auditoría Express</span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-amber-950 mb-1">El Famoso Arqueo</h3>
+                    <p class="text-xs text-slate-600 mb-3 leading-tight">
+                        Es el momento de la verdad: contar el dinero físico y compararlo con el saldo del sistema. ¡Tiene que cuadrar centavo a centavo!
+                    </p>
+
+                    <!-- Simulador de Arqueo Interactivo -->
+                    <div class="bg-white p-3.5 rounded-xl border-2 border-dashed border-amber-400 shadow-sm">
+                        <p class="text-[10px] font-black uppercase text-emerald-900 text-center mb-2">Simulador de Conteo Físico</p>
+                        
+                        <!-- Inputs de conteo rápido -->
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="bg-slate-50 p-1.5 rounded border border-slate-200 text-center">
+                                <span class="text-[10px] block font-bold text-slate-500">Billetes $200</span>
+                                <div class="flex items-center justify-center gap-1.5 mt-1">
+                                    <button onclick="ajustarConteo('b200', -1)" class="bg-slate-300 px-1 rounded font-bold text-xs">-</button>
+                                    <span id="cant-b200" class="font-bold text-xs font-mono text-slate-800">5</span>
+                                    <button onclick="ajustarConteo('b200', 1)" class="bg-slate-300 px-1 rounded font-bold text-xs">+</button>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-1.5 rounded border border-slate-200 text-center">
+                                <span class="text-[10px] block font-bold text-slate-500">Billetes $100</span>
+                                <div class="flex items-center justify-center gap-1.5 mt-1">
+                                    <button onclick="ajustarConteo('b100', -1)" class="bg-slate-300 px-1 rounded font-bold text-xs">-</button>
+                                    <span id="cant-b100" class="font-bold text-xs font-mono text-slate-800">4</span>
+                                    <button onclick="ajustarConteo('b100', 1)" class="bg-slate-300 px-1 rounded font-bold text-xs">+</button>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-1.5 rounded border border-slate-200 text-center">
+                                <span class="text-[10px] block font-bold text-slate-500">Billetes $50</span>
+                                <div class="flex items-center justify-center gap-1.5 mt-1">
+                                    <button onclick="ajustarConteo('b50', -1)" class="bg-slate-300 px-1 rounded font-bold text-xs">-</button>
+                                    <span id="cant-b50" class="font-bold text-xs font-mono text-slate-800">1</span>
+                                    <button onclick="ajustarConteo('b50', 1)" class="bg-slate-300 px-1 rounded font-bold text-xs">+</button>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-1.5 rounded border border-slate-200 text-center">
+                                <span class="text-[10px] block font-bold text-slate-500">Comprobantes (vales)</span>
+                                <span id="cant-vales" class="font-bold text-xs text-amber-700 block mt-1">$550.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Verificación Dinámica -->
+                        <div class="bg-slate-900 text-white p-2.5 rounded-lg text-center">
+                            <span class="text-[9px] block text-slate-400 uppercase font-semibold">Cálculo de Consistencia</span>
+                            <div class="flex justify-between items-center px-2 mt-1">
+                                <span class="text-[11px] text-slate-300">Total Físico + Vales:</span>
+                                <span id="arqueo-total-sum" class="text-sm font-black text-emerald-400 font-mono">$2,000.00</span>
+                            </div>
+                            <div class="mt-1.5 pt-1.5 border-t border-slate-800 flex justify-between items-center px-2">
+                                <span class="text-[10px] text-slate-400">Estado de la Caja:</span>
+                                <span id="arqueo-resultado" class="text-xs font-extrabold text-green-400 uppercase bg-green-950 px-2 py-0.5 rounded border border-green-800">¡CUADRADO!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <p class="text-[9px] text-slate-500 leading-tight">
+                        *El Arqueo sorpresivo ayuda a mantener la honestidad y la disciplina en los flujos pequeños del negocio.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- -->
+    <!-- Pie de página informativo (No imprimible) -->
+    <footer class="no-print bg-emerald-950 text-white/70 py-6 text-center text-xs border-t border-emerald-900">
+        <div class="max-w-4xl mx-auto px-4">
+            <p class="font-bold text-white mb-2">Tríptico Educativo para Finanzas de Pymes y Negocios</p>
+            <p class="text-emerald-300/60 max-w-xl mx-auto leading-relaxed">
+                Este folleto demuestra que llevar una Caja Chica es el primer paso hacia una cultura de control financiero. Un peso guardado hoy es un salvavidas mañana.
+            </p>
+            <p class="mt-4 text-[10px] text-amber-400 font-bold">Hecho interactivo de forma didáctica para un entendimiento intuitivo.</p>
+        </div>
+    </footer>
+
+    <!-- JS interactivo para el simulador y plegado -->
+    <script>
+        // Inicializar iconos de Lucide
+        lucide.createIcons();
+
+        // Variables globales del simulador
+        let saldoActual = 1450.00;
+        let gastosRegistrados = [
+            { descripcion: "💡 Foco Oficina", monto: 150.00 },
+            { descripcion: "📦 Envío DHL urgente", monto: 400.00 }
+        ];
+
+        // Estado del simulador de Arqueo
+        let arqueo = {
+            b200: 5, // 5 * 200 = 1000
+            b100: 4, // 4 * 100 = 400
+            b50: 1   // 1 * 50 = 50
+        };
+
+        // Cambiar de cara del tríptico
+        function switchView(view) {
+            const ext = document.getElementById('cara-exterior');
+            const interior = document.getElementById('cara-interior');
+            const btnExt = document.getElementById('btn-exterior');
+            const btnInt = document.getElementById('btn-interior');
+
+            if(view === 'exterior') {
+                ext.classList.remove('hidden');
+                ext.classList.add('grid');
+                interior.classList.add('hidden');
+                interior.classList.remove('grid');
+
+                btnExt.className = "px-4 py-2 rounded-full font-bold text-sm transition-all bg-amber-400 text-emerald-950 shadow-md transform hover:scale-105";
+                btnInt.className = "px-4 py-2 rounded-full font-bold text-sm transition-all bg-emerald-800 text-emerald-100 hover:bg-emerald-700";
+            } else {
+                interior.classList.remove('hidden');
+                interior.classList.add('grid');
+                ext.classList.add('hidden');
+                ext.classList.remove('grid');
+
+                btnInt.className = "px-4 py-2 rounded-full font-bold text-sm transition-all bg-amber-400 text-emerald-950 shadow-md transform hover:scale-105";
+                btnExt.className = "px-4 py-2 rounded-full font-bold text-sm transition-all bg-emerald-800 text-emerald-100 hover:bg-emerald-700";
+            }
+        }
+
+        // Simular inicio de sesión
+        function togglePassword() {
+            const pass = document.getElementById('login-pass');
+            const icon = document.getElementById('pass-icon');
+            if (pass.type === "password") {
+                pass.type = "text";
+                icon.setAttribute("data-lucide", "eye-off");
+            } else {
+                pass.type = "password";
+                icon.setAttribute("data-lucide", "eye");
+            }
+            lucide.createIcons();
+        }
+
+        function simularAcceso() {
+            const feedback = document.getElementById('acceso-feedback');
+            feedback.classList.remove('hidden');
+            setTimeout(() => {
+                feedback.textContent = "🔓 Acceso Concedido: Entrando al Panel...";
+                setTimeout(() => {
+                    switchView('interior');
+                }, 1000);
+            }, 800);
+        }
+
+        // Registrar gastos imprevistos de forma dinámica
+        const posiblesGastos = [
+            { desc: "🚕 Taxi por entrega urgente", costo: 120 },
+            { desc: "☕ Café para reunión clave", costo: 80 },
+            { desc: "🔧 Reparación llave de agua", costo: 250 },
+            { desc: "📄 Copias de contratos urgentes", costo: 50 },
+            { desc: "🧹 Artículo de limpieza de emergencia", costo: 110 }
+        ];
+
+        function agregarGastoInesperado() {
+            if (saldoActual <= 100) {
+                // Utilizando contenedor flotante en lugar de alert()
+                const originalText = document.getElementById('saldo-dinamico').textContent;
+                document.getElementById('saldo-dinamico').textContent = "🚨 ¡REEMBOLSAR!";
+                setTimeout(() => {
+                    document.getElementById('saldo-dinamico').textContent = originalText;
+                }, 2000);
+                return;
+            }
+
+            // Seleccionar uno aleatoriamente
+            const randomGasto = posiblesGastos[Math.floor(Math.random() * posiblesGastos.length)];
+            
+            saldoActual -= randomGasto.costo;
+            gastosRegistrados.unshift({ descripcion: "⚠️ " + randomGasto.desc, monto: randomGasto.costo });
+
+            // Actualizar saldo visual
+            document.getElementById('saldo-dinamico').textContent = `$${saldoActual.toFixed(2)}`;
+
+            // Actualizar Historial
+            const historialHTML = gastosRegistrados.map(g => `
+                <div class="flex justify-between text-[10px] bg-slate-800/50 p-1.5 rounded animate-pulse">
+                    <span class="text-slate-300 truncate max-w-[150px]">${g.descripcion}</span>
+                    <span class="text-amber-400 font-bold">-$${g.monto.toFixed(2)}</span>
+                </div>
+            `).join('');
+            document.getElementById('historial-gastos').innerHTML = historialHTML;
+
+            // Actualizar la suma de comprobantes (vales) automáticamente en el paso 3
+            const totalSumaVales = 2000 - saldoActual;
+            document.getElementById('cant-vales').textContent = `$${totalSumaVales.toFixed(2)}`;
+
+            recalcularArqueo();
+        }
+
+        // Control del conteo físico del arqueo
+        function ajustarConteo(tipo, cantidad) {
+            if (tipo === 'b200') {
+                arqueo.b200 = Math.max(0, arqueo.b200 + cantidad);
+                document.getElementById('cant-b200').textContent = arqueo.b200;
+            } else if (tipo === 'b100') {
+                arqueo.b100 = Math.max(0, arqueo.b100 + cantidad);
+                document.getElementById('cant-b100').textContent = arqueo.b100;
+            } else if (tipo === 'b50') {
+                arqueo.b50 = Math.max(0, arqueo.b50 + cantidad);
+                document.getElementById('cant-b50').textContent = arqueo.b50;
+            }
+            recalcularArqueo();
+        }
+
+        // Recalcular arqueo para verificar balance
+        function recalcularArqueo() {
+            const vales = 2000 - saldoActual;
+            const efectivoFisico = (arqueo.b200 * 200) + (arqueo.b100 * 100) + (arqueo.b50 * 50);
+            const totalAuditado = efectivoFisico + vales;
+
+            // Actualizar interfaz
+            document.getElementById('arqueo-total-sum').textContent = `$${totalAuditado.toFixed(2)}`;
+
+            const resultadoBadge = document.getElementById('arqueo-resultado');
+            
+            // Margen de cuadre contra los $2000 originales autorizados
+            if (totalAuditado === 2000) {
+                resultadoBadge.textContent = "¡CUADRADO!";
+                resultadoBadge.className = "text-xs font-extrabold text-green-400 uppercase bg-green-950 px-2 py-0.5 rounded border border-green-800";
+            } else if (totalAuditado < 2000) {
+                const faltante = 2000 - totalAuditado;
+                resultadoBadge.textContent = `❌ FALTANTE: -$${faltante.toFixed(2)}`;
+                resultadoBadge.className = "text-xs font-extrabold text-rose-400 uppercase bg-rose-950 px-2 py-0.5 rounded border border-rose-800 animate-bounce";
+            } else {
+                const sobrante = totalAuditado - 2000;
+                resultadoBadge.textContent = `⚠️ SOBRANTE: +$${sobrante.toFixed(2)}`;
+                resultadoBadge.className = "text-xs font-extrabold text-amber-400 uppercase bg-amber-950 px-2 py-0.5 rounded border border-amber-800";
+            }
+        }
+    </script>
+</body>
+</html>
