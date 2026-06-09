@@ -1,5 +1,10 @@
 // API de usuarios (proyecto usuarios/) — puerto 8000
-const API_BASE = 'http://127.0.0.1:8000/api';
+const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+
+const API_BASE = isLocalhost
+    ? 'http://127.0.0.1:8000/api'
+    : 'https://caja-chica-humberto.onrender.com/api';
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const authPage = document.querySelector('.auth-page');
@@ -118,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hideMessage();
             }, 1200);
         } catch (error) {
-            showMessage('No se pudo conectar con el servidor. Verifica: cd usuarios && python manage.py runserver 8001', 'error');
+            showMessage('No se pudo conectar con el servidor. Verifica: cd usuarios && python manage.py runserver 8000', 'error');
         }
     }
 });
