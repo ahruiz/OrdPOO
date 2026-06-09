@@ -2,7 +2,6 @@ import datetime
 from django.utils import timezone
 import json
 from django.http import JsonResponse
-from turtle import pos
 from webbrowser import get
 from rest_framework import serializers
 from django.shortcuts import render
