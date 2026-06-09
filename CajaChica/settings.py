@@ -25,8 +25,12 @@ SECRET_KEY = 'django-insecure-(_+0fdlyy8m&p#(1jj!fw2c)3a*^2hafa-j3mf6nu85&b5@5@m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = [
+    'caja-chica-humberto.onrender.com', 
+    'cajachica-ejvd.onrender.com', 
+    'localhost', 
+    '127.0.0.1'
+]
 
 # Application definition
 
@@ -130,7 +134,7 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
-        'http://localhost:5500',
+        'https://cajachica-ejvd.onrender.com',  # <-- Tu frontend en internet (¡Esta es la clave!)        'http://localhost:5500',
         'http://127.0.0.1:5500',
         'http://localhost:8000',
         'http://127.0.0.1:8000',
