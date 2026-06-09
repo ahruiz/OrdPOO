@@ -134,7 +134,7 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
-            CORS_ALLOW_ALL_ORIGINS = True
+        CORS_ALLOW_ALL_ORIGINS = True
 
         # 'https://cajachica-ejvd.onrender.com',  # <-- Tu frontend en internet (¡Esta es la clave!)
         # 'http://localhost:5500',
