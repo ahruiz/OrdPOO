@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
 
+
     loginForm.addEventListener('submit', handleLogin);
     signupForm.addEventListener('submit', handleSignup);
 
@@ -54,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleLogin(event) {
         event.preventDefault();
         hideMessage();
+
+        const usuarioActivo = localStorage.getItem('usuario');
+        if (usuarioActivo) {
+            alert('Ya tienes una sesión activa en el sistema de Caja Chica.');
+            window.location.href = redirectUrl;
+            return; // Detiene la ejecución del resto del script de acceso
+        }
 
         const email = loginForm.email.value.trim();
         const password = loginForm.password.value;

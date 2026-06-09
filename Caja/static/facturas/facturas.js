@@ -35,6 +35,7 @@ function makeFetch() {
                         <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
                         <p class="badge">Importe: ${campo.importe}</p>
                         <p class="badge">Departamento: ${(campo.departamento ? campo.departamento : "").toUpperCase()}</p>
+                        <h2 class="badge">Aplicada en Caja: ${campo.aplicada}</h2>
                         <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>
 
                     </div>

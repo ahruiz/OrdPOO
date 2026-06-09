@@ -107,6 +107,7 @@ body::before {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    size: 60px;
 }
 
 .btn-form1 {

@@ -35,6 +35,7 @@ function makeFetch() {
                         <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
                         <p class="badge">Importe: ${campo.importe}</p>
                         <p class="badge">Departamento: ${(campo.departamento ? campo.departamento : "").toUpperCase()}</p>
+                        <h2 class="badge">Aplicada en Caja: ${campo.aplicada}</h2>
                         <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>
 
                     </div>
@@ -148,6 +149,11 @@ function crear_fact() {
     var importe = document.getElementById("importe").value;
     var departamento = document.getElementById("departamento").value;
 
+    // si numFact no es numeroco mandar una alerta y regresar
+    if (isNaN(numfact) || numfact.trim() === "") {
+        alert("El número de factura debe ser un valor numérico válido.");
+        return;
+    }
     if (facturasexistentes.includes(numfact)) {
         alert("El número de factura " + numfact + " ya existe en el sistema. Refrescando la lista...");
         return;

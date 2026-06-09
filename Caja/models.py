@@ -2,6 +2,7 @@ from os import name
 from sqlite3 import LEGACY_TRANSACTION_CONTROL
 from django.db import models
 from decimal import Decimal
+from django.conf import settings
 
 class Usuario(models.Model):
     nombre = models.CharField(max_length=100)
@@ -82,3 +83,33 @@ class ingresoCaja(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     descripcion = models.CharField(default="Reposición de caja", max_length=255)
     numRepos = models.CharField(max_length=55, default="0")
+
+class ValeCaja(models.Model):
+    ESTADO_CHOICES = [
+        ('PENDIENTE', 'Pendiente de Descuento'),
+        ('APLICADO', 'Descontado en Nómina'),
+        ('CANCELADO', 'Cancelado / Sin Efecto'),
+    ]
+    
+    MOTIVO_CHOICES = [
+        ('FALTANTE_ARQUEO', 'Faltante en Arqueo de Caja'),
+        ('ANTICIPO', 'Anticipo / Préstamo Corto'),
+        ('OTRO', 'Otro Motivo Descriptivo'),
+    ]
+
+    caja = models.ForeignKey('Caja', on_delete=models.PROTECT, related_name='vales')
+    usuario_recibe = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='vales_recibidos', help_text="Cajero responsable del faltante o deudor")
+    usuario_autoriza = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='vales_autorizados', help_text="Supervisor que detectó o autorizó el vale")
+    
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    motivo = models.CharField(max_length=20, choices=MOTIVO_CHOICES, default='FALTANTE_ARQUEO')
+    observaciones = models.TextField(blank=True, null=True, help_text="Detalles del descuadre o aclaraciones")
+    estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='PENDIENTE')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_aplicacion = models.DateTimeField(blank=True, null=True, help_text="Fecha en que nómina aplicó el descuento")
+
+    class Meta:
+        ordering = ['-fecha_creacion']
+
+    def __str__(self):
+        return f"Vale #{self.id} - {self.usuario_recibe.username} (${self.monto})"

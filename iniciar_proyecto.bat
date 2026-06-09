@@ -3,7 +3,7 @@ title Lanzador de Proyecto - Servidor Local
 
 @echo off
 :: 1. Activar el entorno virtual usando el script correcto para CMD (.bat)
-call c:\cajaChica\env\Scripts\activate.bat
+call c:\cajaChica\env\Scripts\activate
 
 :: 2. Asegurarnos de que django-cors-headers esté instalado en el entorno
 pip install django-cors-headers

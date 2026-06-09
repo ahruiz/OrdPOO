@@ -1,6 +1,6 @@
 from os import read
 from rest_framework import serializers
-from .models import Usuario, Admin, Cajero, Administrator, Caja, Factura, ingresoCaja
+from .models import Usuario, Admin, Cajero, Administrator, Caja, ValeCaja, Factura, ingresoCaja
 from Caja.models import Usuario, Admin, Cajero, Administrator, Caja, Factura, ingresoCaja
 
 
@@ -29,6 +29,30 @@ class CajaSerializer(serializers.ModelSerializer):
         
         model = Caja
         fields = ["id", "Cajero", "saldo_inicial", "saldo"]
+
+class ValeCajaSerializer(serializers.ModelSerializer):
+    # Campos dinámicos para simplificar el Frontend
+    empleado_nombre = serializers.ReadOnlyField(source='usuario_recibe.first_name')
+    empleado_apellido = serializers.ReadOnlyField(source='usuario_recibe.last_name')
+    autoriza_nombre = serializers.ReadOnlyField(source='usuario_autoriza.first_name')
+    motivo_display = serializers.CharField(source='get_motivo_display', read_only=True)
+    estado_display = serializers.CharField(source='get_estado_display', read_only=True)
+
+    class Meta:
+        model = ValeCaja
+        fields = [
+            'id', 'caja', 'usuario_recibe', 'empleado_nombre', 'empleado_apellido',
+            'usuario_autoriza', 'autoriza_nombre', 'monto', 'motivo', 'motivo_display',
+            'observaciones', 'estado', 'estado_display', 'fecha_creacion', 'fecha_aplicacion'
+        ]
+        read_only_fields = ['usuario_autoriza', 'fecha_creacion', 'fecha_aplicacion']
+
+    def create(self, validated_data):
+        # Inyectamos automáticamente al usuario logueado en el backend como el que autoriza
+        request = self.context.get('request')
+        if request and request.user:
+            validated_data['usuario_autoriza'] = request.user
+        return super().create(validated_data)
  
 
 class FacturaSerializer(serializers.ModelSerializer):

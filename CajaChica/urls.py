@@ -32,6 +32,7 @@ urlpatterns = [
     path('consulta/', TemplateView.as_view(template_name='cajas/consulta.html'), name='consulta'),
     path('aplic_fact/', TemplateView.as_view(template_name='cajas/aplic_fact.html'), name='aplic_fact'),
     path('gasto_tot/', TemplateView.as_view(template_name='cajas/gasto_tot.html'), name='gasto_tot'),
+    path('vales/', TemplateView.as_view(template_name='cajas/vales.html'), name='vales'),
     path('cajeros/', TemplateView.as_view(template_name='cajeros/cajeros.html'), name='cajeros'),
     path('cajeros/alta/', TemplateView.as_view(template_name='cajeros/alta.html'), name='alta_cajero'),
     path('cajeros/baja/', TemplateView.as_view(template_name='cajeros/baja.html'), name='baja_cajero'),

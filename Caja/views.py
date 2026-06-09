@@ -7,12 +7,16 @@ from webbrowser import get
 from rest_framework import serializers
 from django.shortcuts import render
 from rest_framework.decorators import action
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
+from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status
 from decimal import Decimal
 from django.shortcuts import get_object_or_404
-from .models import Usuario, Admin, Cajero, Administrator, Caja, Factura, ingresoCaja
-from .serializers import UsuarioSerializer, AdminSerializer,CajeroSerializer, AdministratorSerializer, CajaSerializer, FacturaSerializer, ingresoCajaSerializer
+from .models import Usuario, Admin, Cajero, Administrator, Caja, ValeCaja, Factura, ingresoCaja
+from .serializers import UsuarioSerializer, AdminSerializer,CajeroSerializer, AdministratorSerializer, CajaSerializer, ValeCajaSerializer, FacturaSerializer, ingresoCajaSerializer
 
 
 def _check_password(usuario, password):
@@ -230,6 +234,43 @@ class CajaViewSet(viewsets.ModelViewSet):
             "nuevo_saldo": caja.saldo
         })
     
+@method_decorator(csrf_exempt, name='dispatch')
+class ValeCajaViewSet(viewsets.ModelViewSet):
+    queryset = ValeCaja.objects.all()
+    serializer_class = ValeCajaSerializer
+    #permission_classes = [IsAuthenticated]
+
+    # Permite filtrar vales en la URL fácilmente: /api/vales/?caja_id=1 o /api/vales/?estado=PENDIENTE
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        caja_id = self.request.query_params.get('caja_id')
+        estado = self.request.query_params.get('estado')
+        
+        if caja_id:
+            queryset = queryset.filter(caja_id=caja_id)
+        if estado:
+            queryset = queryset.filter(estado=estado)
+        return queryset
+
+    # Acción personalizada para que Contabilidad liquide el vale
+    @action(detail=True, methods=['post'], url_path='aplicar-descuento')
+    def aplicar_descuento(self, request, pk=None):
+        vale = self.get_object()
+        if vale.estado != 'PENDIENTE':
+            return Response(
+                {"error": f"Este vale ya no se encuentra pendiente (Estado actual: {vale.estado})"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        vale.estado = 'APLICADO'
+        vale.fecha_aplicacion = timezone.now()
+        vale.save()
+        
+        serializer = self.get_serializer(vale)
+        return Response(
+            {"message": "Vale aplicado con éxito en la nómina actual", "data": serializer.data},
+            status=status.HTTP_200_OK
+        )
 
 class FacturaViewSet(viewsets.ModelViewSet):
     queryset = Factura.objects.all()
