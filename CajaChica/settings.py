@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -55,7 +56,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'CajaChica.urls'
@@ -134,10 +134,13 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
-        'https://cajachica-ejvd.onrender.com',  # <-- Tu frontend en internet (¡Esta es la clave!)        'http://localhost:5500',
-        'http://127.0.0.1:5500',
-        'http://localhost:8000',
-        'http://127.0.0.1:8000',
+            CORS_ALLOW_ALL_ORIGINS = True
+
+        # 'https://cajachica-ejvd.onrender.com',  # <-- Tu frontend en internet (¡Esta es la clave!)
+        # 'http://localhost:5500',
+        # 'http://127.0.0.1:5500',
+        # 'http://localhost:8000',
+        # 'http://127.0.0.1:8000',
     ]
 
 CORS_ALLOW_HEADERS = [
