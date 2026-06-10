@@ -23,6 +23,6 @@ echo.
 echo ===================================================
 echo [4/4] Iniciando Servidor Local de Caja Chica...
 echo ===================================================
-python manage.py runserver 0.0.0.0:8000
-
+python manage.py runserver
+start 127.0.0.1:8000
 pause

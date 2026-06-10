@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(_+0fdlyy8m&p#(1jj!fw2c)3a*^2hafa-j3mf6nu85&b5@5@m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     'caja-chica-humberto.onrender.com', 
@@ -125,7 +126,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # STATICFILES_DIRS = [
-#     BASE_DIR / "static",
+#     BASE_DIR / "Caja/static",
 # ]
 
 
@@ -133,14 +134,13 @@ STATIC_URL = '/static/'
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOW_ALL_ORIGINS = True
-    #CORS_ALLOWED_ORIGINS = [
-        # 'https://cajachica-ejvd.onrender.com',  # <-- Tu frontend en internet (¡Esta es la clave!)
-        # 'http://localhost:5500',
-        # 'http://127.0.0.1:5500',
-        # 'http://localhost:8000',
-        # 'http://127.0.0.1:8000',
-    #]
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:5500',
+        'http://127.0.0.1:5500',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'https://cajachica-ejvd.onrender.com',  # <-- Tu frontend en internet (¡Esta es la clave!)
+    ]
 
 CORS_ALLOW_HEADERS = [
     'accept',

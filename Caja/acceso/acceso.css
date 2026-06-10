@@ -26,7 +26,7 @@ body::before {
     /* Lo manda al fondo de todo */
 
     /* Tu imagen con los ajustes de tamaño */
-    background-image: url("../../Caja/cajas/caja_ch.jpg");
+    background-image: url("../../Caja/acceso/caja_ch.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

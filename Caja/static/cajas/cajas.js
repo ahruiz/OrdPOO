@@ -414,7 +414,7 @@ function solicitarValesCaj() {
     // Consultamos al backend por vales pendientes de este empleado en esta caja específica
     const urlVerificacion = `${urlvales}?usuario_recibe=${usuarioId}&estado=PENDIENTE/`; // Endpoint que filtra por caja, usuario y estado de vale
 
-    fetch(urlverificacion)
+    fetch(urlVerificacion)
         .then(response => {
             // 🌟 BLINDAJE: Si el servidor responde 403, 404, 500, etc., detenemos el flujo con un error claro
             if (!response.ok) {
