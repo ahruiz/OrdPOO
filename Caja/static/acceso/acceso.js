@@ -1,10 +1,10 @@
 // API de usuarios (proyecto usuarios/) — puerto 8000
 const isLocalhost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
 
+// Apuntamos al mismo servidor que está sirviendo tus archivos estáticos
 const API_BASE = isLocalhost
-    ? 'http://127.0.0.1:8000/api/'
-    : 'https://caja-chica-humberto.onrender.com/api/';
-
+    ? 'http://127.0.0.1:8000/api'
+    : 'https://cajachica-ejvd.onrender.com/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     const authPage = document.querySelector('.auth-page');
