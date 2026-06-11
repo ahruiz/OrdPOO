@@ -2,7 +2,7 @@ const STATIC_URL = window.STATIC_URL || '/static/';
 const FACTURAS_IMAGES = STATIC_URL + 'facturas/';
 
 
-var url = "http://127.0.0.1:8000/api/facturas/"
+var url = "/api/facturas/"
 
 let facturasexistentes = [];
 

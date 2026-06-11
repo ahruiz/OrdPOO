@@ -98,8 +98,8 @@ class ValeCaja(models.Model):
     ]
 
     caja = models.ForeignKey('Caja', on_delete=models.PROTECT, related_name='vales')
-    usuario_recibe = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='vales_recibidos', help_text="Cajero responsable del faltante o deudor")
-    usuario_autoriza = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='vales_autorizados', help_text="Supervisor que detectó o autorizó el vale")
+    usuario_recibe = models.ForeignKey(Cajero, on_delete=models.PROTECT, related_name='vales_recibidos', help_text="Cajero responsable del faltante o deudor")
+    usuario_autoriza = models.ForeignKey(Cajero, on_delete=models.PROTECT, related_name='vales_autorizados', help_text="Supervisor que detectó o autorizó el vale")
     
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     motivo = models.CharField(max_length=20, choices=MOTIVO_CHOICES, default='FALTANTE_ARQUEO')
@@ -112,4 +112,4 @@ class ValeCaja(models.Model):
         ordering = ['-fecha_creacion']
 
     def __str__(self):
-        return f"Vale #{self.id} - {self.usuario_recibe.username} (${self.monto})"
+        return f"Vale #{self.id} - {self.usuario_recibe.name} ${self.monto}"

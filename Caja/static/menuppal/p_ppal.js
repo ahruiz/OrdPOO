@@ -2,10 +2,10 @@ const STATIC_URL = window.STATIC_URL || 'Cajas/static/';
 const CAJEROS_IMAGES = STATIC_URL + 'cajeros/';
 const MENU_IMAGES = STATIC_URL + 'menuppal/';
 
-var urlcajas = "http://127.0.0.1:8000/api/cajas/"
-var urlcajeros = "http://127.0.0.1:8000/api/cajeros/"
-var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
-var urlusrs = "http://127.0.0.1:8000/api/usuarios/"
+var urlcajas = "/api/cajas/"
+var urlcajeros = "/api/cajeros/"
+var urlfacturas = "/api/facturas/"
+var urlusrs = "/api/usuarios/"
 
 function saldodecajas() {
     Promise.all([

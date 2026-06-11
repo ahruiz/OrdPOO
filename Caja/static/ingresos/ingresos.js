@@ -3,10 +3,10 @@ const FACTURAS_IMAGES = STATIC_URL + 'facturas/';
 const INGRESOS_IMAGES = STATIC_URL + 'ingresos/';
 
 
-var urlingresos = "http://127.0.0.1:8000/api/ingresos/"
-var urlcajas = "http://127.0.0.1:8000/api/cajas/"
-var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
-var urlcajeros = "http://127.0.0.1:8000/api/cajeros/"
+var urlingresos = "/api/ingresos/"
+var urlcajas = "/api/cajas/"
+var urlfacturas = "/api/facturas/"
+var urlcajeros = "/api/cajeros/"
 
 let cajasexistentes = []; // Variable global para almacenar las cajas con todos sus datos
 let facturasExistentes = []; // Variable global para almacenar las facturas con todos sus datos

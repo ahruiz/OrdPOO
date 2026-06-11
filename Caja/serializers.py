@@ -1,7 +1,5 @@
-from os import read
 from rest_framework import serializers
 from .models import Usuario, Admin, Cajero, Administrator, Caja, ValeCaja, Factura, ingresoCaja
-from Caja.models import Usuario, Admin, Cajero, Administrator, Caja, Factura, ingresoCaja
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
@@ -32,9 +30,9 @@ class CajaSerializer(serializers.ModelSerializer):
 
 class ValeCajaSerializer(serializers.ModelSerializer):
     # Campos dinámicos para simplificar el Frontend
-    empleado_nombre = serializers.ReadOnlyField(source='usuario_recibe.first_name')
+    empleado_nombre = serializers.ReadOnlyField(source='usuario_recibe.name')
     empleado_apellido = serializers.ReadOnlyField(source='usuario_recibe.last_name')
-    autoriza_nombre = serializers.ReadOnlyField(source='usuario_autoriza.first_name')
+    autoriza_nombre = serializers.ReadOnlyField(source='usuario_autoriza.name')
     motivo_display = serializers.CharField(source='get_motivo_display', read_only=True)
     estado_display = serializers.CharField(source='get_estado_display', read_only=True)
 
@@ -48,10 +46,12 @@ class ValeCajaSerializer(serializers.ModelSerializer):
         read_only_fields = ['usuario_autoriza', 'fecha_creacion', 'fecha_aplicacion']
 
     def create(self, validated_data):
-        # Inyectamos automáticamente al usuario logueado en el backend como el que autoriza
-        request = self.context.get('request')
-        if request and request.user:
-            validated_data['usuario_autoriza'] = request.user
+        # El usuario_autoriza es quien crea el vale (por defecto el usuario_recibe mismo,
+        # ya que en la lógica de negocio el cajero es el responsable).
+        # Si no envían usuario_autoriza explícitamente, usamos usuario_recibe.
+        if 'usuario_autoriza' not in validated_data and 'usuario_recibe' in validated_data:
+            validated_data['usuario_autoriza'] = validated_data['usuario_recibe']
+        
         return super().create(validated_data)
  
 

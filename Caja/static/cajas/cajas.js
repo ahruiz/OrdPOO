@@ -1,7 +1,7 @@
-var urlcajas = "http://127.0.0.1:8000/api/cajas/"
-var urlcajeros = "http://127.0.0.1:8000/api/cajeros/"
-var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
-var urlvales = "http://127.0.0.1:8000/api/vales/"
+var urlcajas = "/api/cajas/"
+var urlcajeros = "/api/cajeros/"
+var urlfacturas = "/api/facturas/"
+var urlvales = "/api/vales/"
 
 let cajasexistentes = [];
 let cajerosexistentes = [];
@@ -362,7 +362,6 @@ function mostrarVales() {
     })
 
         .then(data => {
-            console.log(data);
             var campos = data;
 
             if (campos.length === 0) {
@@ -370,23 +369,30 @@ function mostrarVales() {
                 return;
             }
 
-            console.log(data);
             var campos = data;
+            console.log(data);
 
             var card = campos.map(function (campo) {
                 return `
                     <div class="cards">
                         <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
                         <h2 class="badge">Numero del Vale: ${campo.id}</h2>
-                        <p class="badge">Numero de caja: ${campo.caja_id}</p>
-                        <p class="badge">Empleado que recibe el vale: ${campo.usuario_recibe}</p>
-                        <p class="badge">Empleado responsable: ${campo.usuario_autoriza}</p>
-                        <p class="badge">Saldo inicial: ${campo.monto}</p>
-                        <p class="badge">Saldo actual: ${campo.motivo}</p>
+                        <p class="badge">Numero de caja: ${campo.caja}</p>
+                        <p class="badge">Cajero: ${campo.empleado_nombre + ' ' + campo.empleado_apellido}</p>
+                        <p class="badge">Monto: ${campo.monto}</p>
+                        <p class="badge">Motivo: ${campo.motivo}</p>
                         <p class="badge">Observaciones: ${campo.observaciones}</p>
                         <p class="badge">Fecha de creación: ${campo.fecha_creacion}</p>
                         <p class="badge">Estado: ${campo.estado}</p>
+                        <div class="contenedor-botones">
+                            <boton class="btn-form1" onclick="aplicar_descuento(${campo.id}, ${campo.monto}, ${campo.caja})">
+                                Aplicar descuento en nómina
+                            </boton>
                         
+                            <boton class="btn-form1" onclick="desplegarVentanaImpresionVale(${JSON.stringify(campo)})">
+                                Imprimir Vale
+                            </boton>
+                        </div>
                     </div>
             `}).join("");
 
@@ -410,9 +416,10 @@ function solicitarValesCaj() {
     const monto = document.getElementById('monto').value;
     const motivo = document.getElementById('MotivoDelVale').value;
     const observaciones = document.getElementById('comentario').value;
+    console.log("Datos del vale a solicitar:", { cajaId, usuarioId, monto, motivo, observaciones });
 
     // Consultamos al backend por vales pendientes de este empleado en esta caja específica
-    const urlVerificacion = `${urlvales}?usuario_recibe=${usuarioId}&estado=PENDIENTE/`; // Endpoint que filtra por caja, usuario y estado de vale
+    const urlVerificacion = `${urlvales}?caja_id=${cajaId}&estado=PENDIENTE/`; // Endpoint que filtra por caja, usuario y estado de vale
 
     fetch(urlVerificacion)
         .then(response => {
@@ -424,7 +431,7 @@ function solicitarValesCaj() {
         })
         .then(valesExistentes => {
             // Filtramos si el empleado seleccionado ya tiene deudas activas en el JSON devuelto
-            const deudasPrevias = valesExistentes.filter(v => v.usuario_recibe == usuarioId);
+            const deudasPrevias = valesExistentes.filter(v => v.caja_id == cajaId && v.estado === "PENDIENTE");
 
             if (deudasPrevias.length > 0) {
                 // Alerta de advertencia operativa para el cajero
@@ -455,33 +462,39 @@ function crearVale(datosVale) {
             //'X-CSRFToken': csrftoken
         },
         body: JSON.stringify({
-            caja: datosVale.cajaId,
-            usuario_recibe: datosVale.usuarioId,
-            monto: datosVale.monto,
+            caja: Number(datosVale.cajaId),
+            usuario_recibe: Number(datosVale.usuarioId),
+            monto: Number(datosVale.monto),
             motivo: datosVale.motivo,
             observaciones: datosVale.observaciones
-            // Nota: El 'usuario_autoriza' lo pone Django de forma automática en el ViewSet
         })
     })
         .then(response => {
-            if (!response.ok) throw new Error("Error al insertar registro en BD");
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    console.error("Error del servidor (400+):", errorData);
+                    const errorMsg = Object.entries(errorData)
+                        .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+                        .join('\n');
+                    throw new Error(`Error del servidor:\n${errorMsg}`);
+                });
+            }
             return response.json();
         })
         .then(valeRegistrado => {
             alert(`🎉 Vale de Responsabilidad generado con éxito (Folio #${valeRegistrado.id}).`);
-            document.getElementById('caja').value = ''; // Limpia la tarjeta del front
+            document.getElementById('caja').value = '';
             document.getElementById('cajero').value = '';
             document.getElementById('monto').value = '';
             document.getElementById('MotivoDelVale').value = '';
             document.getElementById('comentario').value = '';
 
-            // Desplegamos de inmediato el pop-up ejecutivo listo para imprimir en papel
             desplegarVentanaImpresionVale(valeRegistrado);
-            mostrarVales(); // Refrescamos la lista de vales para incluir el nuevo registro
+            mostrarVales();
         })
         .catch(err => {
             console.error("Error al registrar vale:", err);
-            alert("Ocurrió un error crítico al guardar el vale en el servidor.");
+            alert(`Error: ${err.message}`);
         });
 }
 
@@ -489,6 +502,9 @@ function crearVale(datosVale) {
  * PUNTAL 3: Ventana emergente ejecutiva con solicitud de firmas físicas
  */
 function desplegarVentanaImpresionVale(vale) {
+    // reseteamos windows open para evitar bloqueos por parte del navegador
+    window.open = function () { };
+
     const ancho = 680;
     const alto = 620;
     const izquierda = (screen.width / 2) - (ancho / 2);
@@ -497,6 +513,11 @@ function desplegarVentanaImpresionVale(vale) {
     const ventanaPrint = window.open('', '_blank',
         `width=${ancho},height=${alto},top=${arriba},left=${izquierda},scrollbars=yes`
     );
+
+    if (!ventanaPrint) {
+        alert('El navegador bloqueó la ventana de impresión. Permite ventanas emergentes e inténtalo otra vez.');
+        return;
+    }
 
     // Mapeamos los textos amigables del motivo
     const motivosDict = {
@@ -598,7 +619,7 @@ function desplegarVentanaImpresionVale(vale) {
                 <div class="monto-grand">BUENO POR: $${parseFloat(vale.monto).toFixed(2)} MXN</div>
                 
                 <p><strong>Caja Afectada:</strong> Caja Chica N° ${vale.caja}</p>
-                <p><strong>Fecha de Expedición:</strong> ${fechaLinter || fechaLimpia}</p>
+                <p><strong>Fecha de Expedición:</strong> ${fechaLimpia}</p>
                 <p><strong>Concepto o Motivo:</strong> ${motivoTexto}</p>
                 <p><strong>Detalles/Observaciones:</strong> ${vale.observaciones || 'Sin observaciones adicionales.'}</p>
                 
@@ -627,6 +648,32 @@ function desplegarVentanaImpresionVale(vale) {
         </html>
     `);
     ventanaPrint.document.close();
+}
+
+function aplicar_descuento(valeId, monto, cajaId) {
+    if (!confirm(`¿Confirma que desea aplicar un descuento de $${monto} en nómina por el Vale #${valeId}?`)) {
+        return;
+    }
+    fetch(`/api/vales/${valeId}/aplicar_descuento/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            monto: monto,
+            cajaId: cajaId
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                alert(`Descuento aplicado correctamente al Vale #${valeId}`);
+            } else {
+                alert(`Error al aplicar descuento al Vale #${valeId}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
 var pendientes = [];

@@ -598,7 +598,7 @@ function desplegarVentanaImpresionVale(vale) {
                 <div class="monto-grand">BUENO POR: $${parseFloat(vale.monto).toFixed(2)} MXN</div>
                 
                 <p><strong>Caja Afectada:</strong> Caja Chica N° ${vale.caja}</p>
-                <p><strong>Fecha de Expedición:</strong> ${fechaLinter || fechaLimpia}</p>
+                <p><strong>Fecha de Expedición:</strong> ${fechaLimpia}</p>
                 <p><strong>Concepto o Motivo:</strong> ${motivoTexto}</p>
                 <p><strong>Detalles/Observaciones:</strong> ${vale.observaciones || 'Sin observaciones adicionales.'}</p>
                 
