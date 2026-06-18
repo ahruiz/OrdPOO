@@ -77,3 +77,22 @@ class ingresoCajaSerializer(serializers.ModelSerializer):
         required=False,
         default="Reposición de caja chica"
     )
+
+    from rest_framework import serializers
+from .models import Bitacora
+
+class BitacoraSerializer(serializers.ModelSerializer):
+    # Mostramos el nombre o email del usuario en lugar de su ID numérico
+    usuario_nombre = serializers.ReadOnlyField(source='usuario.username')
+    fecha_formateada = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Bitacora
+        fields = [
+            'id', 'usuario', 'usuario_nombre', 'accion', 'modulo', 
+            'descripcion', 'fecha_registro', 'fecha_formateada', 'monto', 'referencia_id'
+        ]
+        read_only_fields = ['usuario', 'fecha_registro']
+
+    def get_fecha_formateada(self, obj):
+        return obj.fecha_registro.strftime('%d/%m/%Y %H:%M:%S')

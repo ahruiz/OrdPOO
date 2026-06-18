@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{% static 'cajas/cajas.css' %}">
     <script>window.STATIC_URL = "{% static '' %}"</script>
     <script type="application/javascript" src="{% static 'cajas/cajas.js' %}" defer></script>
+    <script defer src="{% static 'bloqPestDuplicds.js' %}"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vales de CAJA</title>
 </head>
@@ -34,7 +35,7 @@
                     <button class="btn-form" onclick="mostrarVales()">Mostrar vales</button>
                     <button class="btn-form" onclick="solicitarValesCaj()">Solicitar vales pendientes</button>
                     <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">Volver a
-                        Cajeros
+                        Cajas
                     </button>
                     <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
                         MENU PPAL

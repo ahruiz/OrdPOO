@@ -11,5 +11,6 @@ routers.register(r'vales', ValeCajaViewSet, basename='vale-caja')
 routers.register(r'facturas', FacturaViewSet, "Factura")
 routers.register(r'ingresos', IngresoCajaViewSet, "IngresoCaja")
 
+
 urlpatterns = routers.urls
 

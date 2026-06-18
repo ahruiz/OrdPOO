@@ -29,11 +29,12 @@ function makeFetch() {
                 return `
                     <div class="cards">
                         <img src="${CAJEROS_IMAGES}cajero.jpg" alt="" class="custom-image">
+                        <div class="cards-info">
                         <h2 class="badge">Num de Cajero: ${campo.id}</h2>
                         <p class="badge">Nombre: ${campo.name.toUpperCase()} ${campo.last_name.toUpperCase()}</p>
                         <p class="badge">Correo: ${campo.email.toUpperCase()}</p>
                         <p class="badge">Telefono: ${campo.phone}</p>
-
+                        </div>
                     </div>
             `}).join("");
 
@@ -74,12 +75,14 @@ function cajerossaldo() {
                 return `
                     <div class="cards">
                         <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Caja: ${cajero.id}</h2>
-                        <p class="badge">Cajero: ${caja ? caja.Cajero : "Baja por Arqueo"}</p>
-                        <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
-                        <p class="badge">Saldo inicial: ${caja ? caja.saldo_inicial : Number(0)}</p>
+                        <div class="cards-info">
+                            <p><strong>Num de Caja: ${cajero.id}</strong></p>
+                            <p><strong>Cajero: ${caja ? caja.Cajero : "Baja por Arqueo"}</strong></p>
+                            <p><strong>Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Telefono: ${cajero ? cajero.phone : "Desconocido"}</strong></p>
+                            <p><strong>Saldo inicial: ${caja ? caja.saldo_inicial : Number(0)}</strong></p>
+                        </div
                         <p class="btn-form1">Saldo actual: ${caja ? caja.saldo : Number(0)}</p>
                         <button class="btn-form1" onclick="borrarCajero(${cajero.id}, ${caja ? caja.saldo : Number(0)})">
                          Borrar
@@ -121,14 +124,14 @@ function cajerosSinSaldo() {
                 return `
                     <div class="cards">
                         <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Caja: ${cajero.id}</h2>
-                        <p class="badge">Cajero: ${caja ? caja.Cajero : "Desconocido"}</p>
-                        <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
-                        <p class="badge">Saldo inicial: ${caja ? caja.saldo_inicial : Number(0)}</p>
-                        <p class="btn-form1">Saldo actual: ${caja ? caja.saldo : Number(0)}</p>
-                        <button class="btn-form1" onclick="borrarCajero(${cajero.id}, ${caja ? caja.saldo : Number(0)})">
+                        <div class="cards-info">
+                            <p><strong>Num de Caja: ${cajero.id}</strong></p>
+                            <p><strong>Cajero: ${caja ? caja.Cajero : "Baja por Arqueo"}</strong></p>
+                            <p><strong>Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Telefono: ${cajero ? cajero.phone : "Desconocido"}</strong></p>
+                            <p><strong>Saldo inicial: ${caja ? caja.saldo_inicial : Number(0)}</strong></p>
+                        </div
                          Borrar
                         </button>
                     </div>

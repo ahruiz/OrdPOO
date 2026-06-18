@@ -37,11 +37,13 @@ function mostrar_reposiciones() {
                 return `
                     <div class="cards">
                         <img src="${INGRESOS_IMAGES}ingreso.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Reposicion ID: ${campo.id}</h2>
-                        <p class="badge">Num de caja: ${campo.caja}</p>
-                        <p class="badge">monto: ${campo.importe}</p>
-                        <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
-                        <p class="badge">Factura asociada: ${campo.numFact}</p>
+                        <div class="cards-info">
+                            <p><strong>Reposicion ID: </strong>${campo.id}</p>
+                            <p><strong>Num de caja: </strong>${campo.caja}</p>
+                            <p><strong>monto: </strong>${campo.importe}</p>
+                            <p><strong>Descripción </strong>: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
+                            <p><strong>Factura asociada: </strong>${campo.numFact}</p>
+                        </div>
                         <p class= "btn-form1">Numero de reposicion: ${campo.numRepos || "Sin datos"}</p>
                         <button 
                             class="btn-form1"
@@ -280,15 +282,16 @@ function mostrar_factAplicds() {
 
                 <div class="cards">
                         <img src="${FACTURAS_IMAGES}factura.jpg" alt="" class="custom-image">
-                        <h2 class="badge">ID Factura: ${factura.id}</h2>
-                        <p class="badge">Num de factura: ${factura.numFact}</p>
-                        <p class="badge">Proveedor: ${factura.proveedor.toUpperCase()}</p>
-                        <p class="badge">Descripción: ${factura.descripcion.toUpperCase()}</p>
-                        <p class="badge">Importe: ${factura.importe}</p>
-                        <p class="badge">Departamento: ${factura.departamento.toUpperCase()}</p>
-                        <h2 class="badge">Aplicada en Caja: ${factura.aplicada}</h2>
-                        <p class="badge">Num de reposicion: ${n_reposicion}</p>
-
+                        <div class="card-info">
+                            <p><strong>ID Factura: ${factura.id}</strong></p>
+                            <p><strong>Num de factura: ${factura.numFact}</strong></p>
+                            <p><strong>Proveedor: ${factura.proveedor.toUpperCase()}</strong></p>
+                            <p><strong>Descripción: ${factura.descripcion.toUpperCase()}</strong></p>
+                            <p><strong>Importe: </strong>${factura.importe}</p>
+                            <p><strong>Departamento: </strong>${factura.departamento.toUpperCase()}</p>
+                            <h2 class="titulo-caja">Aplicada en Caja: ${factura.aplicada}</h2>
+                            <p><strong>Num de reposicion: </strong+>${n_reposicion}</p>
+                        </div>
                         <select class="btn-form1" id="caja-${caja ? caja.id : 'N/A'}" ${estaAplicada ? 'disabled' : ''}>
                             ${cajas.map(c => `<option value="${c.id}">Caja ${c.id}</option>`).join("")}
                         </select> 
@@ -305,8 +308,7 @@ function mostrar_factAplicds() {
                             Aplicar reposicion
                         </button>      
                         <p class= "btn-form1">Saldo: ${cajas.map(c => `<option value="${c.saldo}">caja ${c.id}: ${c.saldo}</option>`).join("")}</p>
-
-                    </div>
+                </div>
             `}).join("");
 
             document.getElementById("element").innerHTML = card;
@@ -511,14 +513,14 @@ function solicitarDatosArq() {
                                     Gasto: FACT ID:${f.id} NUM FACT:(${f.numFact}) : ${f.importe}
                                 </p>
                             `).join("")}
-                        <p class= "btn-form">Gasto total: ${totalGastos.toFixed(2)}</p>
+                        <p class= "btn-form2">Gasto total: ${totalGastos.toFixed(2)}</p>
                         ${facturasConRepos.map(f => `
                                 <p class="btn-form1">
                                     Ingreso: REPOSICION:(${f.numRepos}) : ${f.importe}
                                 </p>
                             `).join("")}
-                        <p class= "btn-form">Ingreso total: ${totalIngresos.toFixed(2)}</p>
-                        <p class= "btn-form1">Saldo: ${caja.saldo}</p>
+                        <p class= "btn-form2">Ingreso total: ${totalIngresos.toFixed(2)}</p>
+                        <p class="${caja.saldo < 0 ? 'btn-form' : 'btn-form2'}">Saldo: ${caja.saldo}</p>
                         <button 
                             class="btn-form1"
                             data-caja="${caja.id ? caja.id : 0}"
@@ -818,7 +820,7 @@ imprimirArqueo: function imprimirArqueo(button) {
 
             <div class="area-botones">
                 <button class="btn btn-imprimir" id="btnImprimir" onclick="window.print()">🖨️ Imprimir Arqueo</button>
-                <button class="btn btn-cierre" id="btnCierre" onclick="window.opener.procesarBajaCero('${cajaId}'); window.close();">🛑 Cierre de Caja (Saldo Cero)</button>
+                <button class="btn btn-cierre" id="btnCierre" onclick="if(confirm('¿Estás completamente seguro de dar de baja la Caja N° ${cajaId}? Esta acción mandará su saldo permanentemente a $0.00 en Django.')){ window.opener.procesarBajaCero('${cajaId}', true); window.close(); }">🛑 Cierre de Caja (Saldo Cero)</button>
                 <button class="btn btn-cerrar" onclick="window.close()">❌ Cerrar Ventana</button>
             </div>
 
@@ -927,9 +929,11 @@ imprimirArqueo: function imprimirArqueo(button) {
     ventanaArqueo.document.close();
 }
 
-function procesarBajaCero(cajaId) {
-    if (!confirm(`¿Estás completamente seguro de dar de baja la Caja N° ${cajaId}?\nEsta acción mandará su saldo permanentemente a $0.00 en Django.`)) {
-        return;
+function procesarBajaCero(cajaId, skipConfirm) {
+    if (!skipConfirm) {
+        if (!confirm(`¿Estás completamente seguro de dar de baja la Caja N° ${cajaId}?\nEsta acción mandará su saldo permanentemente a $0.00 en Django.`)) {
+            return;
+        }
     }
 
     const urlCajaPatch = `${urlcajas}${cajaId}/`; // Ajusta la concatenación según tus variables URL

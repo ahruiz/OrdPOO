@@ -165,31 +165,96 @@
     </div>
     <!-- popup Ayuda -->
     <div class="modal fade" id="ayudaModal" tabindex="-1" aria-labelledby="ayudaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ayudaModalLabel">Ayuda - Cómo usar Caja Chica</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="ayudaModalLabel">🪙 Ayuda - Cómo usar Caja Chica</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p>
-                        Para comenzar a usar el sistema de <strong>Caja Chica</strong>, sigue estos pasos:
+                <div class="modal-body" style="font-size: 0.95rem; line-height: 1.6;">
+                    <p class="fw-semibold text-secondary mb-3">
+                        El Proceso Completo en la Vida Real (Paso a Paso)
                     </p>
-                    <ol>
-                        <li>Selecciona la sección que deseas gestionar: Cajeros, Cajas, Facturas o Ingresos.</li>
-                        <li>En cada sección, podrás agregar, editar o eliminar registros según tus necesidades.</li>
-                        <li>Utiliza los formularios para ingresar los datos requeridos y guarda los cambios.</li>
-                        <li>Consulta los reportes y estadísticas para mantener un control eficiente de tus recursos.
+                    <p class="text-muted">
+                        Para garantizar la transparencia y el control interno de la empresa,
+                        todo el dinero de la Caja Chica debe cumplir rigurosamente con este
+                        ciclo de vida de 6 etapas:
+                    </p>
+                    <hr>
+                    <ol class="list-group list-group-numbered list-group-flush">
+                        <li class="list-group-item border-0 ps-0">
+                            <strong class="text-primary">Registro del Personal (Alta Cajero):</strong> El Administrador
+                            registra al empleado encargado del fondo con sus datos de contacto.
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <strong class="text-primary">Asignación del Fondo (Apertura de Caja):</strong> Se vincula al
+                            cajero con una caja única y se le inyecta un Saldo Inicial (ej. $5,000.00). En ese momento,
+                            el Saldo Actual se activa con el mismo monto.
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <strong class="text-primary">Salida Provisional (El Vale de Caja):</strong> El personal
+                            operativo (ej. Almacén) solicita dinero para un gasto inmediato (combustible, refacciones
+                            urgentes). El cajero le entrega el efectivo y registra un Vale de Caja en el sistema (el
+                            cual se queda en estado Pendiente). El empleado va a realizar la labor.
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <strong class="text-primary">Comprobación del Gasto (Captura de Factura):</strong> Al
+                            terminar el día, el empleado regresa, entrega la factura fiscal y el cajero le
+                            devuelve/cancela su Vale de Caja. El cajero captura la factura en el sistema (la cual entra
+                            en estado Pendiente).
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <strong class="text-primary">Autorización y Pago (Aplicar Factura):</strong> La factura
+                            capturada debe contar con el visto bueno o firma del jefe de área. Una vez autorizada en la
+                            vida real, el cajero ingresa al menú Aplicar Facturas y la marca como pagada. Es aquí—y solo
+                            aquí—cuando el sistema descuenta automáticamente el dinero del Saldo Actual de la caja.
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <strong class="text-primary">Cierre Semanal y Cheque (Días Jueves):</strong> Llegado el
+                            jueves, se realiza el corte de caja mediante dos pasos críticos:
+                            <div class="mt-2 ms-3 p-2 bg-light border-start border-3 border-warning rounded">
+                                <h6><strong>Arqueo Físico:</strong></h6>
+                                <p class="mb-2 text-muted">El cajero cuenta el dinero real del cajón. Si falta dinero,
+                                    se abre un vale temporal para justificarlo (el sistema permite al administrador
+                                    rechazarlo si el cajero ya debe vales anteriores).</p>
+                                <h6><strong>Reposición:</strong></h6>
+                                <p class="mb-0 text-muted">Se revisa el Gasto Total, se imprimen las facturas aplicadas
+                                    de la semana y se entregan a Contabilidad. Contabilidad emite un cheque, el cajero
+                                    lo registra en Ingresos -> Reposición y la caja vuelve a recuperar su Saldo Inicial
+                                    completo para iniciar el viernes con fondos nuevos.</p>
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <strong class="text-primary">Guía de Resolución de Dudas Rápidas (FAQ)</strong>
+                            Bloqueos del Sistema y Reglas Estrictas
+                            <div class="mt-2 ms-3 p-2 bg-light border-start border-3 border-warning rounded">
+                                <h6><strong>¿Por qué el sistema no me deja dar de baja una caja o a un cajero?</strong>
+                                </h6>
+                                <p class="mb-2 text-muted">El sistema protege el dinero. No podrás dar de baja una caja
+                                    si su Saldo Actual es mayor a cero (debe estar completamente en ceros), o si el
+                                    cajero tiene Vales Pendientes sin comprobar. Todo debe estar saldado primero.</p>
+                                <h6><strong>¿Puedo asignarle una segunda caja a un cajero de confianza?</strong></h6>
+                                <p class="mb-0 text-muted">No. El sistema valida estrictamente la regla 1:1 (Un cajero
+                                    por caja, una caja por cajero) para evitar confusiones en los arqueos.</p>
+                                <h6><strong>¿Por qué capturé la factura pero el Saldo Actual no disminuyó?</strong></h6>
+                                <p class="mb-0 text-muted">Porque solo la has capturado. Las facturas se registran como
+                                    Pendientes hasta que el jefe de área las autorice. Debes ir al menú Aplicar Facturas
+                                    y procesar el pago para que el saldo se descuente.</p>
+                            </div>
                         </li>
                     </ol>
-                    <p>
+                    <hr>
+                    <p class="text-center text-muted small mt-3">
                         Si necesitas asistencia adicional, no dudes en contactar a nuestro equipo de soporte.
                     </p>
                 </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- popup Soporte -->
+    </div> <!-- popup Soporte -->
     <div class="modal fade" id="soporteModal" tabindex="-1" aria-labelledby="soporteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

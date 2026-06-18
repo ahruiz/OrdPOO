@@ -10,7 +10,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework import permissions
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from rest_framework import viewsets, status
 from decimal import Decimal
 from django.shortcuts import get_object_or_404
@@ -29,7 +31,7 @@ def _get_by_email(model, email):
         return None
     return model.objects.filter(email__iexact=email.strip()).first()
 
-
+@authentication_classes([]) # <-- ESTO OBLIGA A IGNORAR TOTALMENTE EL CHEQUEO CSRF DE DRF
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
@@ -130,9 +132,8 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         exists = Usuario.objects.filter(email=email).exists()
         return Response({"email": email, "exists": exists})
 
-
+@authentication_classes([]) # <-- ESTO OBLIGA A IGNORAR TOTALMENTE EL CHEQUEO CSRF DE DRF
 class AdminViewSet(viewsets.ModelViewSet):
-    queryset = Admin.objects.all()
     serializer_class = AdminSerializer
 
     @action(detail=False, methods=["post"])
@@ -260,11 +261,28 @@ class ValeCajaViewSet(viewsets.ModelViewSet):
                 {"error": f"Este vale ya no se encuentra pendiente (Estado actual: {vale.estado})"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
+        monto = request.data.get('monto')
+        observaciones = request.data.get('observaciones') or request.data.get('comentario')
+        aplicado_por = request.data.get('aplicado_por')
+
+        if monto is not None:
+            try:
+                vale.monto = Decimal(str(monto))
+            except (ValueError, TypeError, Decimal.InvalidOperation):
+                return Response({"error": "Monto inválido"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if observaciones is not None:
+            vale.observaciones = observaciones
+
+        if aplicado_por:
+            nota = f"Aplicado por: {aplicado_por}"
+            vale.observaciones = f"{vale.observaciones or ''} {nota}".strip()
+
         vale.estado = 'APLICADO'
         vale.fecha_aplicacion = timezone.now()
         vale.save()
-        
+
         serializer = self.get_serializer(vale)
         return Response(
             {"message": "Vale aplicado con éxito en la nómina actual", "data": serializer.data},
@@ -418,3 +436,28 @@ class IngresoCajaViewSet(viewsets.ModelViewSet):
             "nuevo_saldo": caja.saldo,
             "fecha_registro": fecha_temp,
         }, status=status.HTTP_200_OK)
+    
+
+
+from rest_framework import viewsets, permissions
+from .models import Bitacora
+from .serializers import BitacoraSerializer
+
+class BitacoraViewSet(viewsets.ModelViewSet):
+    queryset = Bitacora.objects.all()
+    serializer_serializer = BitacoraSerializer
+    # Solo usuarios autenticados pueden ver e interactuar con la bitácora
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Inyectamos automáticamente el usuario logueado en la petición
+        serializer.save(usuario=self.request.user)
+
+    def get_permissions(self):
+        """
+        Bloqueamos los métodos PUT, PATCH y DELETE para que nadie (ni el admin) 
+        pueda alterar el historial de la bitácora una vez escrito.
+        """
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return [permissions.DenyAll()]
+        return super().get_permissions()

@@ -29,11 +29,12 @@ function makeFetch() {
                 return `
                     <div class="cards">
                         <img src="${CAJEROS_IMAGES}cajero.jpg" alt="" class="custom-image">
+                        <div class="cards-info">
                         <h2 class="badge">Num de Cajero: ${campo.id}</h2>
                         <p class="badge">Nombre: ${campo.name.toUpperCase()} ${campo.last_name.toUpperCase()}</p>
                         <p class="badge">Correo: ${campo.email.toUpperCase()}</p>
                         <p class="badge">Telefono: ${campo.phone}</p>
-
+                        </div>
                     </div>
             `}).join("");
 
@@ -61,26 +62,31 @@ function cajerossaldo() {
                 return;
             }
 
-            cajerosconsaldo = cajeros.filter(c => cajas.some(caja => caja.Cajero == c.id && caja.saldo > 0)); // Filtrar cajeros que tienen una caja con saldo
-            console.log("cajeros con saldo", cajerosconsaldo);
-            if (cajerosconsaldo.length === 0) {
-                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
-                return;
-            }
+            //cajerosconsaldo = cajeros.filter(c => cajas.some(caja => caja.Cajero == c.id && caja.saldo > 0)); // Filtrar cajeros que tienen una caja con saldo
+            //console.log("cajeros con saldo", cajerosconsaldo);
+            // if (cajeros.length === 0) {
+            //     document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+            //     return;
+            // }
 
-            var card = cajerosconsaldo.map(function (cajero) {
-                var caja = cajas.find(c => c.id == c.id); // Encontrar la caja asociada al cajero
+            var card = cajeros.map(function (cajero) {
+                var caja = cajas.find(c => c.id == cajero.id); // Encontrar la caja asociada al cajero
 
                 return `
                     <div class="cards">
                         <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Caja: ${cajero.id}</h2>
-                        <p class="badge">Cajero: ${caja ? caja.Cajero : "Desconocido"}</p>
-                        <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
-                        <p class="badge">Saldo inicial: ${caja ? caja.saldo_inicial : "Desconocido"}</p>
-                        <p class="btn-form1">Saldo actual: ${caja ? caja.saldo : "Desconocido"}</p>
+                        <div class="cards-info">
+                            <p><strong>Num de Caja: ${cajero.id}</strong></p>
+                            <p><strong>Cajero: ${caja ? caja.Cajero : "Baja por Arqueo"}</strong></p>
+                            <p><strong>Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Telefono: ${cajero ? cajero.phone : "Desconocido"}</strong></p>
+                            <p><strong>Saldo inicial: ${caja ? caja.saldo_inicial : Number(0)}</strong></p>
+                        </div
+                        <p class="btn-form1">Saldo actual: ${caja ? caja.saldo : Number(0)}</p>
+                        <button class="btn-form1" onclick="borrarCajero(${cajero.id}, ${caja ? caja.saldo : Number(0)})">
+                         Borrar
+                        </button>
                     </div>
             `}).join("");
 
@@ -104,9 +110,9 @@ function cajerosSinSaldo() {
             console.log("cajeros", cajeros);
 
 
-            cajerossinsaldo = cajeros.filter(c => cajas.some(caja => caja.Cajero == c.id && caja.saldo <= 0)); // Filtrar cajeros que no tienen una caja con saldo
-            console.log("cajeros sin saldo", cajerossinsaldo);
-            if (cajerossinsaldo.length === 0) {
+            //cajerossinsaldo = cajeros.filter(c => cajas.some(caja => caja.Cajero == c.id && caja.saldo <= 0)); // Filtrar cajeros que no tienen una caja con saldo
+            //console.log("cajeros sin saldo", cajerossinsaldo);
+            if (cajeros.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
                 return;
             }
@@ -118,14 +124,14 @@ function cajerosSinSaldo() {
                 return `
                     <div class="cards">
                         <img src="${CAJAS_IMAGES}caja_ch.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Caja: ${cajero.id}</h2>
-                        <p class="badge">Cajero: ${caja ? caja.Cajero : "Desconocido"}</p>
-                        <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
-                        <p class="badge">Saldo inicial: ${caja ? caja.saldo_inicial : "Desconocido"}</p>
-                        <p class="btn-form1">Saldo actual: ${caja ? caja.saldo : "Desconocido"}</p>
-                        <button class="btn-form1" onclick="borrarCajero(${cajero.id})">
+                        <div class="cards-info">
+                            <p><strong>Num de Caja: ${cajero.id}</strong></p>
+                            <p><strong>Cajero: ${caja ? caja.Cajero : "Baja por Arqueo"}</strong></p>
+                            <p><strong>Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Telefono: ${cajero ? cajero.phone : "Desconocido"}</strong></p>
+                            <p><strong>Saldo inicial: ${caja ? caja.saldo_inicial : Number(0)}</strong></p>
+                        </div
                          Borrar
                         </button>
                     </div>
@@ -195,7 +201,11 @@ function crear_cajero() {
 
 }
 
-function borrarCajero(id) {
+function borrarCajero(id, saldo) {
+    if (saldo > 0) {
+        alert("No se puede borrar un cajero con saldo positivo. Favor de vaciar la caja antes de eliminar el cajero.");
+        return;
+    }
 
     if (!confirm("¿Seguro que quieres borrar este cajero?")) {
         return;
@@ -211,7 +221,7 @@ function borrarCajero(id) {
             }
 
             alert("Cajero eliminado");
-            makeFetch(); // Recargar tarjetas
+            cajerossaldo(); // Recargar tarjetas
         })
         .catch(error => {
             console.log("Error:", error);

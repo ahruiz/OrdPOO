@@ -29,13 +29,15 @@ function makeFetch() {
                 return `
                     <div class="cards">
                         <img src="${FACTURAS_IMAGES}factura.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Factura ID: ${campo.id}</h2>
-                        <p class="badge">Num de Factura: ${campo.numFact}</p>
-                        <p class="badge">Proveedor: ${(campo.proveedor ? campo.proveedor : "").toUpperCase()}</p>
-                        <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
-                        <p class="badge">Importe: ${campo.importe}</p>
-                        <p class="badge">Departamento: ${(campo.departamento ? campo.departamento : "").toUpperCase()}</p>
-                        <h2 class="badge">Aplicada en Caja: ${campo.aplicada}</h2>
+                        <div class="cards-info">
+                            <h2><strong>Factura ID: ${campo.id}</strong></h2>
+                            <p><strong>Num de Factura: ${campo.numFact}</strong></p>
+                            <p><strong>Proveedor: ${(campo.proveedor ? campo.proveedor : "").toUpperCase()}</strong></p>
+                            <p><strong>Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</strong></p>
+                            <p><strong>Importe: ${campo.importe}</strong></p>
+                            <p><strong>Departamento: ${(campo.departamento ? campo.departamento : "").toUpperCase()}</strong></p>
+                            <h2><strong>Aplicada en Caja: ${campo.aplicada}</strong></h2>
+                        </div>
                         <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>
 
                     </div>
@@ -73,17 +75,24 @@ function makeFetch1() {
             console.log(data);
             var campos = data;
 
+            if (data.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+
             var card = campos.map(function (campo) {
                 return `
                     <div class="cards">
                         <img src="${FACTURAS_IMAGES}factura.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Factura ID: ${campo.id}</h2>
-                        <p class="badge">Num de Factura: ${campo.numFact}</p>
-                        <p class="badge">Proveedor: ${(campo.proveedor || "").toUpperCase()}</p>
-                        <p class="badge">Descripción: ${(campo.descripcion || "").toUpperCase()}</p>
-                        <p class="badge">Importe: ${campo.importe}</p>
-                        <p class="badge">Departamento: ${(campo.departamento || "").toUpperCase()}</p>
-                        <p class="${campo.aplicada !== '0' ? 'btn-edofactpag' : 'btn-edofactpte'}">Estado: ${campo.aplicada !== '0' ? "Pagada" : "Pendiente"}</p>
+                        <div class="cards-info">
+                            <h2><strong>Factura ID: ${campo.id}</strong></h2>
+                            <p><strong>Num de Factura: ${campo.numFact}</strong></p>
+                            <p><strong>Proveedor: ${(campo.proveedor ? campo.proveedor : "").toUpperCase()}</strong></p>
+                            <p><strong>Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</strong></p>
+                            <p><strong>Importe: ${campo.importe}</strong></p>
+                            <p><strong>Departamento: ${(campo.departamento ? campo.departamento : "").toUpperCase()}</strong></p>
+                            <h2><strong>Aplicada en Caja: ${campo.aplicada}</strong></h2>
+                        </div>
                         <button class="btn-form1" onclick="borrarFactura(${campo.id})">
                          Borrar
                         </button>
@@ -110,15 +119,15 @@ function soloFactsPendientes() {
             console.log(data);
             var campos = data;
 
-            if (data.length === 0) {
-                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
-                return;
-            }
-
             facturaspendientes = data.filter(f => f.aplicada === '0'); // guardamos las facturas pendientes
             data = facturaspendientes;
             console.log(data);
             var campos = data;
+
+            if (data.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
 
             var card = campos.map(function (campo) {
                 return `
