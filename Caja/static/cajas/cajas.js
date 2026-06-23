@@ -56,17 +56,20 @@ function cajasen0() {
 
         .then(data => {
             var campos = data;
+            console.log(data);
 
             if (campos.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
                 return;
             }
 
-            cajasencero = campos.filter(c => c.saldo === '0.00'); //
-            data = cajasencero; // Sobrescribimos data con las cajas que tienen saldo 0 para mostrar solo esas
-            var campos = data;
+            cajasencero = campos.filter(c => c.saldo === 0); //
+            if (cajasencero.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
 
-            var card = campos.map(function (campo) {
+            var card = cajasencero.map(function (campo) {
                 return `
                     <div class="cards">
                         <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
@@ -250,49 +253,182 @@ function borrarCaja(id) {
         });
 }
 
-function borrarVale(id) {
-    // 1. Confirmación inicial
-    if (!confirm("¿Seguro que quieres borrar este VALE?")) {
+function cancelarVale(id, motivoCancel) {
+    console.log("motivo desde vales pendientes: ", motivoCancel);
+    //Validación de que no vaya vacío el campo que acabamos de meter
+    if (!motivoCancel || motivoCancel.trim() === "") {
+        alert("❌ Por favor, escribe el motivo de la CANCELACION antes de continuar.");
         return;
     }
 
-    // Nota: Como estás borrando un vale individual, la condición de "no existencia de vales pendientes"
-    // usualmente significa que no puedes borrarlo si SU estado actual es 'pendiente' (o activo).
+    if (!confirm("¿Seguro que quieres dar de baja este VALE?")) {
+        return;
+    }
 
-    // Primero consultamos el estado de ese vale específico
+    // 1. Consultamos el vale original para clonar sus propiedades
     fetch(urlvales + id + "/")
         .then(response => {
             if (!response.ok) throw new Error("No se pudo verificar el estado del vale");
             return response.json();
         })
-        .then(vale => {
-            // Condición: Si el vale está pendiente (ajusta 'pendiente' según manejes tu campo estado)
-            if (vale.estado === "pendiente" || vale.pendiente === true) {
-                alert("No se puede eliminar este vale porque se encuentra en estado PENDIENTE.");
+        .then(valeOriginal => {
+            // Nota: En tu fetch anterior filtrabas por "PENDIENTE" (mayúsculas), 
+            // asegúrate de validar idéntico a tu backend.
+            if (valeOriginal.estado === "PAGADO") {
+                alert("No se puede eliminar un vale que ya está liquidado.");
                 return;
             }
-
-            // Si pasa la condición (ej. ya está pagado o cancelado), se borra
-            return fetch(urlvales + id + "/", {
-                method: "DELETE"
+            if (valeOriginal.estado === "CANCELADO") {
+                alert("Este vale ya se encuentra cancelado.");
+                return;
+            }
+            console.log(valeOriginal);
+            // 2. CREAMOS EL NUEVO REGISTRO (HISTORIAL DE BAJA)
+            // Enviamos un POST a la lista general de vales
+            return fetch(urlvales, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'X-CSRFToken': csrftoken // Actívalo si Django te lo pide
+                },
+                body: JSON.stringify({
+                    caja: Number(valeOriginal.caja),
+                    usuario_recibe: Number(valeOriginal.usuario_recibe),
+                    monto: Number(valeOriginal.monto), // Puede ir en negativo si es contra-asiento
+                    motivo: "OTRO",
+                    observaciones: `CANCELACIÓN FOLIO #${valeOriginal.id} --- Motivo: ${motivoCancel.toUpperCase()}`
+                })
+            }).then(postResponse => {
+                if (!postResponse.ok) throw new Error("No se pudo crear el registro de historial de baja");
+                //return postResponse.json();
+                // 3. ACTUALIZAMOS O ELIMINAMOS EL ORIGINAL
+                return fetch(urlvales + id + "/", {
+                    method: "PATCH",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        estado: "CANCELADO"
+                    })
+                });
             });
         })
-        .then(response => {
-            if (response) {
-                if (!response.ok) throw new Error("Error al borrar");
+        .then(responseFinal => {
+            if (!responseFinal.ok) throw new Error("Error al dar de baja el vale original");
 
-                alert("Vale eliminado correctamente");
-                mostrarValesPend(); // Recargar tarjetas
-            }
+            alert("🎉 Proceso completado: Se ha generado el registro de CANCELACION e inactivado el vale original.");
+            //actualizamos el nuevo registro
+            actualizaEstadoCancelacion(motivoCancel);
+
         })
         .catch(error => {
-            console.error(error);
-            alert("Error al procesar la baja del vale.");
+            console.error("Error en el flujo:", error);
+            alert("Error al procesar la baja del vale: " + error.message);
         });
 }
 
+function actualizaEstadoCancelacion(motivoCancel) {
+    //leemos los vales y localizamos el que tiene el motivo de la cancelacion y actualizamos a "SIN EFECTO" en un patch
+    console.log("Iniciando búsqueda para cambiar a SIN EFECTO...");
+
+    // 1. Fetch para leer todos los vales
+    fetch(urlvales)
+        .then(response => {
+            if (!response.ok) throw new Error("No se pudieron leer los vales para el historial");
+            return response.json();
+        })
+        .then(vales => {
+            const textoBuscado = motivoCancel.toUpperCase();
+
+            // 2. Agregamos el .find() para localizar el vale clonado recién creado
+            // Buscamos un vale cuyo campo observaciones o motivo contenga el texto de cancelación
+            const valeClonado = vales.find(vale =>
+                vale.estado === "PENDIENTE" && // Filtramos por el estado inicial con el que se creó
+                vale.observaciones &&
+                vale.observaciones.includes(textoBuscado)
+            );
+
+            // Si el find lo localiza, sacamos sus datos
+            if (!valeClonado) {
+                console.warn("⚠️ No se encontró el registro clonado en el pool actual.");
+                return;
+            }
+
+            console.log("🎯 Registro clonado localizado con ID:", valeClonado.id);
+
+            // 3. Agregamos el fetch (PATCH) usando el ID localizado
+            return fetch(urlvales + valeClonado.id + "/", {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'X-CSRFToken': csrftoken // Actívalo si Django lo requiere
+                },
+                body: JSON.stringify({
+                    estado: "SIN EFECTO" // Actualizamos el estado a SIN EFECTO
+                })
+            });
+        })
+        .then(responsePatch => {
+            if (responsePatch) {
+                if (!responsePatch.ok) throw new Error("No se pudo actualizar el estado a SIN EFECTO");
+                console.log("✅ Historial actualizado correctamente a 'SIN EFECTO'.");
+                mostrarValesPendSinBotones(); // Refrescamos la interfaz para asegurar el orden visual
+            }
+        })
+        .catch(error => {
+            console.error("❌ Error al actualizar el estado de cancelación:", error);
+        });
+}
+
+function mostrarValesPendSinBotones() {
+    fetch(urlvales).then(Response => {
+        if (!Response.ok) {
+            throw new Error("Error en la solicitud");
+        }
+        return Response.json();
+    })
+
+        .then(data => {
+            var campos = data;
+            console.log(data);
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+            const valesPendientes = campos.filter(v =>
+                v.estado === "PENDIENTE" || v.estado === "CANCELADO" || "SIN EFECTO" || "OTRO" || "ANTICIPO"
+            );
+
+            valesGlobal = campos;
+
+            var card = valesPendientes.map(function (campo) {
+                return `
+                    <div class="cards">
+                        <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <div class="cards-info">
+                            <p><strong>Numero del Vale: ${campo.id}</strong></p>
+                            <p><strong>Numero de caja: ${campo.caja}</strong></p>
+                            <p><strong>Cajero: ${campo.empleado_nombre + ' ' + campo.empleado_apellido}</strong></p>
+                            <p><strong>Monto: ${campo.monto}</strong></p>
+                            <p><strong>Motivo: ${campo.motivo}</strong></p>
+                            <p><strong>Observaciones: ${campo.observaciones}</strong></p>
+                            <p><strong>Fecha de creación: ${campo.fecha_creacion}</strong></p>
+                        </div>
+                        <p class="btn-form">Estado: ${campo.estado}</p>
+                    </div>
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+            //console.log("motivo de la cancelacion: ", motivoCancel);
+
+        })
+        .catch(error => {
+            alert('Error al cargar vales: ' + error.message);
+        });
+
+}
+
 function modifica_caja() {
-    alert("No modificamos CAJAS ni VALES, solo las mostramos y/o en su caso las borramos, lo siento :(");
+    alert("No modificamos CAJAS, solo las mostramos y/o en su caso las borramos, lo siento :(");
     return;
 }
 
@@ -410,24 +546,24 @@ function mostrarValesPend() {
 
         .then(data => {
             var campos = data;
+            console.log(data);
 
             if (campos.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
                 return;
             }
             const valesPendientes = campos.filter(v =>
-                v.estado === "PENDIENTE"
-            ); console.log(valesPendientes)
+                v.estado === "PENDIENTE" || v.estado === "CANCELADO" || "SIN EFECTO"
+            );
 
             valesGlobal = campos;
-            console.log(valesGlobal)
 
             var card = valesPendientes.map(function (campo) {
                 return `
                     <div class="cards">
                         <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
-                        <div class="cards-info>
-                            <p><strong>Numero del Vale: ${campo.id}</strong></h2>
+                        <div class="cards-info">
+                            <p><strong>Numero del Vale: ${campo.id}</strong></p>
                             <p><strong>Numero de caja: ${campo.caja}</strong></p>
                             <p><strong>Cajero: ${campo.empleado_nombre + ' ' + campo.empleado_apellido}</strong></p>
                             <p><strong>Monto: ${campo.monto}</strong></p>
@@ -437,14 +573,17 @@ function mostrarValesPend() {
                         </div>
                         <p class="btn-form">Estado: ${campo.estado}</p>
                         <div class="contenedor-botones">
-                            <button class="btn-form1" onclick="borrarVale(${campo.id})">
-                                Borrar
+                            <input class="input-form" type="text" name="motivoCancel" id="motivoCancel-${campo.id}" placeholder="Motivo de CANCELACION">
+                        
+                            <button class="btn-form1" onclick="cancelarVale(${campo.id}, document.getElementById('motivoCancel-${campo.id}').value)">
+                                Cancelar VALE
                             </button>
                         </div>
                     </div>
             `}).join("");
 
             document.getElementById("element").innerHTML = card;
+            //console.log("motivo de la cancelacion: ", motivoCancel);
 
         })
         .catch(error => {
@@ -477,7 +616,7 @@ function mostrarVales() {
                     <div class="cards">
                         <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
                         <div class="cards-info">
-                            <p>strong>Numero del Vale: </strong>${campo.id}</p>
+                            <p><strong>Numero del Vale: </strong>${campo.id}</p>
                             <p><strong>Numero de caja: </strong>${campo.caja}</p>
                             <p><strong>Cajero: </strong>${campo.empleado_nombre + ' ' + campo.empleado_apellido}</p>
                             <p><strong>Monto: </strong>${campo.monto}</p>
@@ -543,8 +682,8 @@ function solicitarValesCaj() {
             ); console.log(valesExistentes)
 
             if (!valesExistentes || valesExistentes.length === 0) {
-                alert("⚠️ Operación detenida: No existen registros de vales activos en el sistema para validar deudas.\nPor favor, asegúrese de seleccionar una Caja y un Cajero válidos antes de iniciar.");
-                return; // <--- CERRAMOS EL PROCESO AQUÍ. No pasa a deudas ni a crearVale.
+                alert("⚠️ Operación detenida: No existen registros de vales activos en el sistema para validar deudas.\nPresione ACEPTAR para continuar con la creacion del VALE.");
+                crearVale({ cajaId, usuarioId, monto, motivo, observaciones });
             }
 
             if (deudasPrevias.length > 0) {
@@ -553,11 +692,10 @@ function solicitarValesCaj() {
                 if (!confirmacion) {
                     console.log("Operación cancelada por el usuario.");
                     return;
+                } else {
+                    crearVale({ cajaId, usuarioId, monto, motivo, observaciones });
                 }
             }
-
-            // Si no tiene deudas o el usuario presionó "Aceptar" en el confirm, se crea el vale
-            crearVale({ cajaId, usuarioId, monto, motivo, observaciones });
         })
         .catch(err => {
             console.error(err);
@@ -576,6 +714,13 @@ function crearVale(datosVale) {
         alert("❌ Error de Validación de Formulario:\n\nNo se puede crear el vale porque la Caja o el Cajero seleccionados no son válidos (Clave '0' o vacía).\n\nPor favor, llena los campos correctamente.");
         return; // <--- Aborta el fetch por completo si los tipos de datos van a reventar el backend
     }
+    const ventanaImpresionAnticipada = window.open('', '_blank');
+    if (!ventanaImpresionAnticipada) {
+        alert('El navegador bloqueó la ventana de impresión. Por favor, permite las ventanas emergentes.');
+        return;
+    }
+    // Ponemos un mensaje temporal de carga en la ventana abierta
+    ventanaImpresionAnticipada.document.write("<p style='font-family:sans-serif; text-align:center; margin-top:50px;'>Generando vale y preparando vista de impresión...</p>");
 
     // Tomamos el token CSRF obligatorio de Django de las cookies
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || "";
@@ -617,10 +762,11 @@ function crearVale(datosVale) {
             if (!valesGlobal) valesGlobal = [];
             valesGlobal.push(valeRegistrado);
 
-            desplegarVentanaImpresionVale(valeRegistrado);
+            desplegarVentanaImpresionVale(valeRegistrado, ventanaImpresionAnticipada);
             mostrarVales();
         })
         .catch(err => {
+            if (ventanaImpresionAnticipada) ventanaImpresionAnticipada.close();
             alert(`Error: ${err.message}`);
         });
 }

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static 'cajas/cajas.css' %}">
-    <script>window.STATIC_URL = "{% static '' %}";</script>
+    <script>window.STATIC_URL = "{% static '' %}"</script>
     <script type="application/javascript" src="{% static 'cajas/cajas.js' %}" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAJA de CAJA y VALES</title>
@@ -20,7 +20,7 @@
                     <div class="tabs-nav">
                         <button class="tab-link active-tab" onclick="switchTab(event, 'pestana-cajas')">Baja de
                             Cajas</button>
-                        <button class="tab-link" onclick="switchTab(event, 'pestana-vales')">Baja de Vales</button>
+                        <button class="tab-link" onclick="switchTab(event, 'pestana-vales')">Cancelar Vales</button>
                     </div>
 
                     <div id="pestana-cajas" class="tab-content active-content">
@@ -30,7 +30,7 @@
                     </div>
 
                     <div id="pestana-vales" class="tab-content">
-                        <h1 class="title">Baja de VALES</h1>
+                        <h1 class="title">Cancelar VALES</h1>
 
                         <button class="btn-form" onclick="mostrarValesPend()">Vales pendientes</button>
                     </div>

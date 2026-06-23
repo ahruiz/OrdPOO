@@ -89,6 +89,7 @@ class ValeCaja(models.Model):
         ('PENDIENTE', 'Pendiente de Descuento'),
         ('APLICADO', 'Descontado en Nómina'),
         ('CANCELADO', 'Cancelado / Sin Efecto'),
+        ('SIN EFECTO', 'Sin Efecto / Solo Registro'),
     ]
     
     MOTIVO_CHOICES = [
