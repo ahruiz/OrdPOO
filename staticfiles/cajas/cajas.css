@@ -1,29 +1,28 @@
+/* ==========================================================================
+   1. ESTRUCTURA PRINCIPAL Y CONTENEDORES
+   ========================================================================= */
 .main-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
     gap: 20px;
-
     margin: 25px;
 }
 
 .container {
-
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    flex-wrap: wrap;
+    height: fit-content;
     gap: 20px;
-
-    margin: 25px;
+    margin: 20px;
 }
 
 .row {
     width: 100%;
     align-items: flex-start;
-
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -34,182 +33,298 @@
 .col {
     width: 30%;
     height: fit-content;
-
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-
 }
 
 .wrapper {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-
     gap: 30px;
 }
 
+/* ==========================================================================
+   2. TARJETA CONTENEDORA (DISEÑO PROFESIONAL CIAN)
+   ========================================================================= */
 .form-container {
     width: 100%;
+    max-width: 360px;
+    /* Acota el contenedor para un look más compacto y simétrico */
     height: fit-content;
-
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
     align-items: center;
-    padding: 10%;
-    background-color: yellowgreen;
+    /* Centra horizontalmente todo el contenido */
+    padding: 30px 20px;
+    /* Cambiado el 10% por espaciado fijo y limpio */
 
+    /* Fondo cian grisáceo muy elegante y ejecutivo */
+    background-color: #e6f2f5;
+
+    /* Marco ejecutivo de doble línea refinada corporativa */
+    border: 4px double #1a6b82;
+    border-radius: 12px;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.12);
+    /* Sombra sutil de profundidad */
+    box-sizing: border-box;
 }
 
+/* Títulos Centrados con Contraste Profesional */
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a6b82;
+    /* Tono cian oscuro corporativo */
+    text-align: center;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
 
+/* ==========================================================================
+   3. ELEMENTOS DE FORMULARIO (INPUTS Y SELECTS REGULARES)
+   ========================================================================= */
+.input-form,
+select {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #a5c2cc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    height: 40px;
+    /* Ajustado ligeramente para mejor lectura de texto */
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.input-form:focus,
+select:focus {
+    border-color: #1a6b82;
+    outline: none;
+    box-shadow: 0 0 5px rgba(26, 107, 130, 0.3);
+}
+
+/* ==========================================================================
+   4. CONTROL DE COMPACTACIÓN DE RADIO BUTTONS (2X2 REAL)
+   ========================================================================= */
+/* Si envuelves tus radios en un div con clase "radio-group" en tu HTML */
+.radio-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    /* Fuerza las 2 columnas exactas */
+    gap: 12px 10px !important;
+    width: 100% !important;
+    max-width: 260px !important;
+    /* Mantiene los elementos a salvo dentro del contenedor */
+    margin: 12px auto !important;
+    padding: 0 !important;
+}
+
+.radio-group label {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    /* Centrado vertical del círculo y texto */
+    justify-content: flex-start !important;
+    font-size: 14px !important;
+    color: #333333 !important;
+    cursor: pointer !important;
+    width: auto !important;
+}
+
+/* Modificación quirúrgica para aislar los radios del width global */
+.radio-group input[type="radio"] {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    margin: 0 8px 0 0 !important;
+    /* Separación fija y pegadita a la palabra */
+    padding: 0 !important;
+    cursor: pointer !important;
+    accent-color: #1a6b82 !important;
+    /* Círculo pintado de cian al seleccionarse */
+}
+
+/* ==========================================================================
+   5. BOTONES (UNIFICADOS AL CENTRO Y MISMO ANCHO)
+   ========================================================================= */
+.contenedor-botones {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.btn-form,
+.btn-form1,
+.btn-delete,
+.btn-deshabilitado {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    /* Perfecta simetría con los campos de entrada */
+    box-sizing: border-box;
+    margin: 8px auto 4px auto;
+    /* Centrado en bloque absoluto */
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+/* Botón de Acción Principal (Cian Corporativo) */
+.btn-form {
+    background-color: #1a6b82;
+    color: white;
+}
+
+.btn-form:hover {
+    background-color: #135163;
+}
+
+/* Botón de Retorno / Cancelación (Rojo Corporativo Mate, no chillante) */
+.btn-form1 {
+    background-color: #c93b3b;
+    color: white;
+}
+
+.btn-form1:hover {
+    background-color: #a62f2f;
+}
+
+/* Botón de Eliminación Directa */
+.btn-delete {
+    background-color: #d9534f;
+    color: white;
+}
+
+/* Botón Estado Deshabilitado */
+.btn-deshabilitado {
+    background-color: #b9cbd1;
+    color: #718890;
+    border: 1px solid #9bb2ba;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   6. COMPONENTES ADICIONALES (TABLAS, TARJETAS E HISTORIAL)
+   ========================================================================= */
+.conttable {
+    table-layout: auto;
+    border: 2px solid #1a6b82;
+    border-collapse: collapse;
+}
+
+.cards,
+.cards1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    background-color: #1a6b82;
+    /* Cambiado de verde a Cian Oscuro Corporativo */
+    color: white;
+}
+
+.cards {
+    width: 250px;
+}
+
+.cards1 {
+    margin-top: 90px;
+    width: 320px;
+}
+
+.text-card {
+    font-size: 18px;
+    font-weight: bold;
+    color: #c93b3b;
+    text-align: center;
+}
+
+/* Fondo de aplicación corporativo */
 body::before {
     content: "";
-
     position: fixed;
     top: 0;
     left: 0;
-
     width: 100%;
     height: 100%;
-
     background-image: url("./caja_ch.jpg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: 600px;
-
-    opacity: 0.38;
-    /* transparencia de la marca de agua */
-
+    opacity: 0.15;
+    /* Atenuado sutilmente para evitar fatiga visual */
     z-index: -1;
-    /* manda la imagen al fondo */
 }
 
-.input-form {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    padding: 10px;
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.btn-form {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: rgb(0, 128, 255);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-form1 {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: rgb(255, 0, 0);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-delete {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: rgb(255, 0, 0);
-    align-items: center;
-
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.conttable {
-    table-layout: auto;
-    border: 2;
-    border-color: black;
-    border-radius: 2px;
-}
-
-.cards {
-    padding: 30px;
-    box-shadow: 2px 2px 15px 2px black;
-    align-items: center;
-    text-align: center;
-    border-radius: 20px;
-    width: 250px;
-
-    background-color: green;
-    color: white
-}
-
-.text-card {
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-}
-
+/* Marquesina de Estado Inferior */
 .ticker {
     width: 100%;
     overflow: hidden;
-    background: black;
-    color: white;
+    background: #111111;
+    color: #e6f2f5;
     padding: 10px 0;
     position: fixed;
     bottom: 0;
     left: 0;
 }
 
-.ticker-text {
-    display: inline-block;
-    white-space: nowrap;
-    animation: mover 12s linear infinite;
+/* ==========================================================================
+   7. CONTROLADORES DE PESTAÑAS (TABS)
+   ========================================================================= */
+.tabs-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid rgba(26, 107, 130, 0.2);
+    padding-bottom: 10px;
+    justify-content: center;
+    /* Garantiza que las pestañas queden centradas arriba */
+    width: 100%;
 }
 
-@keyframes mover {
-    0% {
-        transform: translateX(100%);
-    }
-
-    100% {
-        transform: translateX(-100%);
-    }
+.tab-link {
+    background: none;
+    border: none;
+    color: #718890;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 6px 12px;
+    transition: all 0.3s;
 }
 
-.btn-deshabilitado {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #ccc;
-    color: #666;
-    border: 1px solid #999;
-    border-radius: 5px;
-    cursor: not-allowed;
+.tab-link.active-tab {
+    color: #1a6b82;
+    border-bottom: 3px solid #1a6b82;
 }
 
-.cards1 {
-    margin-top: 90px;
-    width: 320px;
+.tab-content {
+    display: none;
+    width: 100%;
+}
+
+.tab-content.active-content {
     display: flex;
     flex-direction: column;
-    padding: 30px;
-    box-shadow: 2px 2px 15px 2px black;
     align-items: center;
-    text-align: center;
-    border-radius: 20px;
-
-    background-color: rgb(0, 128, 255);
-    color: white
+    /* Alinea los elementos internos perfectamente en el centro */
 }

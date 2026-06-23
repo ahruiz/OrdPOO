@@ -1,28 +1,27 @@
+/* ==========================================================================
+   1. ESTRUCTURA PRINCIPAL Y CONTENEDORES
+   ========================================================================= */
 .main-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
     gap: 20px;
-
     margin: 25px;
 }
 
 .container {
-
     display: flex;
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
     gap: 20px;
-
     margin: 25px;
 }
 
 .row {
     width: 100%;
     align-items: flex-start;
-
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -33,134 +32,248 @@
 .col {
     width: 30%;
     height: fit-content;
-
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-
 }
 
 .wrapper {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-
     gap: 30px;
 }
 
+/* ==========================================================================
+   2. TARJETA CONTENEDORA (DISEÑO PROFESIONAL CIAN)
+   ========================================================================= */
 .form-container {
     width: 100%;
+    max-width: 360px;
+    /* Acota el contenedor para mantener la simetría */
     height: fit-content;
-
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10%;
-    background-color: yellowgreen;
+    /* Centra horizontalmente todo el contenido */
+    padding: 30px 20px;
+    /* Espaciado fijo profesional en lugar de 10% */
 
+    /* Fondo cian grisáceo elegante */
+    background-color: #e6f2f5;
+
+    /* Marco ejecutivo de doble línea refinada */
+    border: 4px double #1a6b82;
+    border-radius: 12px;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.12);
+    /* Sombra de profundidad */
+    box-sizing: border-box;
 }
 
-body::before {
-    content: "";
-
-    position: fixed;
-    top: 0;
-    left: 0;
-
+/* Títulos Centrados (Corrigiendo el desalineado original) */
+h1,
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a6b82;
+    /* Tono cian oscuro corporativo */
+    text-align: center;
     width: 100%;
-    height: 100%;
-
-    background-image: url("./factura.jpg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 600px;
-
-    opacity: 0.38;
-    /* transparencia de la marca de agua */
-
-    z-index: -1;
-    /* manda la imagen al fondo */
+    margin-top: 5px;
+    margin-bottom: 20px;
 }
 
-.input-form {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    padding: 10px;
+/* ==========================================================================
+   3. ELEMENTOS DE FORMULARIO (INPUTS Y SELECTS)
+   ========================================================================= */
+.input-form,
+select {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    padding: 8px 12px;
     width: 100%;
     max-width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid #a5c2cc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    height: 40px;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #333333;
 }
 
+.input-form:focus,
+select:focus {
+    border-color: #1a6b82;
+    outline: none;
+    box-shadow: 0 0 5px rgba(26, 107, 130, 0.3);
+}
+
+/* ==========================================================================
+   4. CONTROL DE COMPACTACIÓN DE RADIO BUTTONS (POR SI ACASO, FORMATO 2X2)
+   ========================================================================= */
+.radio-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px 10px !important;
+    width: 100% !important;
+    max-width: 260px !important;
+    margin: 12px auto !important;
+    padding: 0 !important;
+}
+
+.radio-group label {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    font-size: 14px !important;
+    color: #333333 !important;
+    cursor: pointer !important;
+    width: auto !important;
+}
+
+.radio-group input[type="radio"] {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    margin: 0 8px 0 0 !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    accent-color: #1a6b82 !important;
+}
+
+/* ==========================================================================
+   5. SISTEMA DE BOTONES UNIFICADOS Y CENTRADOS
+   ========================================================================= */
+.btn-form,
+.btn-form1,
+.btn-delete,
+.btn-edofactpte,
+.btn-edofactpag {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    /* Perfecta alineación vertical con los inputs */
+    box-sizing: border-box;
+    margin: 8px auto 4px auto;
+    /* Centrado en bloque absoluto */
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+/* Botón de Acción / Guardar (Cian Corporativo) */
 .btn-form {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: rgb(0, 128, 255);
+    background-color: #1a6b82;
     color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
+.btn-form:hover {
+    background-color: #135163;
+}
+
+/* Botón de Retorno / Cancelar (Rojo Corporativo Mate) */
 .btn-form1 {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: rgb(255, 0, 0);
+    background-color: #c93b3b;
     color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
+.btn-form1:hover {
+    background-color: #a62f2f;
+}
+
+/* Botón de Eliminación */
 .btn-delete {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: rgb(255, 0, 0);
-    align-items: center;
-
+    background-color: #d9534f;
     color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
+/* Botón Estado Factura Pendiente (Rojo Ejecutivo de Advertencia) */
+.btn-edofactpte {
+    background-color: #d9534f;
+    color: white;
+}
+
+.btn-edofactpte:hover {
+    background-color: #c13d39;
+}
+
+/* Botón Estado Factura Pagada (Azul Acero de Éxito) */
+.btn-edofactpag {
+    background-color: #2e7d32;
+    /* Cambiado a un verde/azul más sobrio y ejecutivo para representar "Pagado" */
+    color: white;
+}
+
+.btn-edofactpag:hover {
+    background-color: #1b5e20;
+}
+
+/* ==========================================================================
+   6. COMPONENTES EXTRA (TABLAS, SECCIONES E HISTORIAL)
+   ========================================================================= */
 .conttable {
     table-layout: auto;
-    border: 2;
-    border-color: black;
-    border-radius: 2px;
+    border: 2px solid #1a6b82;
+    border-collapse: collapse;
 }
 
-.cards {
-    padding: 30px;
-    box-shadow: 2px 2px 15px 2px black;
+.cards,
+.cards1 {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     text-align: center;
-    border-radius: 20px;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    background-color: #1a6b82;
+    /* Cambiado a Cian Oscuro */
+    color: white;
+}
 
-    background-color: green;
-    color: white
+.cards1 {
+    margin-top: 90px;
+    width: 320px;
 }
 
 .text-card {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     text-align: center;
 }
 
+/* Imagen de fondo / Marca de agua de facturas */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("./factura.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 600px;
+    opacity: 0.15;
+    /* Atenuado sutilmente para mejor balance de contraste */
+    z-index: -1;
+}
+
+/* Marquesina de estado */
 .ticker {
     width: 100%;
     overflow: hidden;
-    background: black;
-    color: white;
+    background: #111111;
+    color: #e6f2f5;
     padding: 10px 0;
     position: fixed;
     bottom: 0;
@@ -181,49 +294,4 @@ body::before {
     100% {
         transform: translateX(-100%);
     }
-}
-
-
-.btn-edofactpte {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-edofactpag {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: blue;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.cards1 {
-    margin-top: 90px;
-    width: 320px;
-    display: flex;
-    flex-direction: column;
-    padding: 30px;
-    box-shadow: 2px 2px 15px 2px black;
-    align-items: center;
-    text-align: center;
-    border-radius: 20px;
-
-    background-color: rgb(0, 128, 255);
-    color: white
-}
-
-h1 {
-    text-align: justify;
-    text-justify: auto;
 }

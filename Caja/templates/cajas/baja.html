@@ -5,10 +5,10 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static 'cajas/cajas.css' %}">
-    <script>window.STATIC_URL = "{% static '' %}";</script>
+    <script>window.STATIC_URL = "{% static '' %}"</script>
     <script type="application/javascript" src="{% static 'cajas/cajas.js' %}" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAJA de CAJA</title>
+    <title>BAJA de CAJA y VALES</title>
 </head>
 
 <body>
@@ -16,21 +16,59 @@
         <div class="row">
             <div class="col">
                 <div class="form-container">
-                    <h1 class="title">Baja de CAJA</h1>
-                    <button class="btn-form" onclick="cajasen0()">Cajas con saldo 0</button>
-                    <button class="btn-form" onclick="cajasactivs()">Cajas activas</button>
-                    <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">Volver a
-                        Cajas</button>
-                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
-                        MENU PPAL
+
+                    <div class="tabs-nav">
+                        <button class="tab-link active-tab" onclick="switchTab(event, 'pestana-cajas')">Baja de
+                            Cajas</button>
+                        <button class="tab-link" onclick="switchTab(event, 'pestana-vales')">Cancelar Vales</button>
+                    </div>
+
+                    <div id="pestana-cajas" class="tab-content active-content">
+                        <h1 class="title">Baja de CAJA</h1>
+
+                        <button class="btn-form" onclick="cajasen0()">Cajas con saldo 0</button>
+                    </div>
+
+                    <div id="pestana-vales" class="tab-content">
+                        <h1 class="title">Cancelar VALES</h1>
+
+                        <button class="btn-form" onclick="mostrarValesPend()">Vales pendientes</button>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 15px 0;">
+
+                    <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">
+                        Volver a Cajas
                     </button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">
+                        Volver a MENU PPAL
+                    </button>
+
                 </div>
             </div>
         </div>
     </div>
-    <div class="container" id="element"></div>
-</body>
 
-</html>
+    <div class="container" id="element"></div>
+
+    <script>
+        function switchTab(event, tabId) {
+            // Ocultar todos los contenidos de las pestañas
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active-content'));
+
+            // Quitar la clase activa de todos los botones
+            const tabs = document.querySelectorAll('.tab-link');
+            tabs.forEach(tab => tab.classList.remove('active-tab'));
+
+            // Mostrar el contenido seleccionado y activar el botón correspondiente
+            document.getElementById(tabId).classList.add('active-content');
+            event.currentTarget.classList.add('active-tab');
+
+            // Opcional: Limpia el contenedor "element" al cambiar de pestaña para evitar cruce de datos visuales
+            document.getElementById('element').innerHTML = '';
+        }
+    </script>
+</body>
 
 </html>

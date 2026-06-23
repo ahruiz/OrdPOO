@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static 'cajeros/cajeros.css' %}">
-    <script>window.STATIC_URL = "{% static "" %}";</script>
+    <script>window.STATIC_URL = "{% static '' %}"</script>
     <script type="application/javascript" src="{% static 'cajeros/cajeros.js' %}" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Cambios de cajero</title>
@@ -16,10 +16,10 @@
         <div class="row">
             <div class="col">
                 <div class="form-container">
-                    <h1>Modificación de Cajero</h1>
+                    <h1 class="title">Modificación de Cajero</h1>
                     <input class="input-form" type="number" name="id" id="id" placeholder="ID del cajero a modificar">
-                    <p class="text-card">Campo a modificar</p>
-                    <div id="type">
+                    <p class="radio-title">Campo a modificar</p>
+                    <div class="radio-group" id="type">
                         <input type="radio" name="camp_mod" id="cam_nom" value="nombre" checked> Nombre
                         <input type="radio" name="camp_mod" id="cam_ape" value="apellido"> Apellido
                         <input type="radio" name="camp_mod" id="cam_email" value="email"> Email

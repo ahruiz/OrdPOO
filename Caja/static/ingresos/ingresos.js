@@ -3,10 +3,10 @@ const FACTURAS_IMAGES = STATIC_URL + 'facturas/';
 const INGRESOS_IMAGES = STATIC_URL + 'ingresos/';
 
 
-var urlingresos = "http://127.0.0.1:8000/api/ingresos/"
-var urlcajas = "http://127.0.0.1:8000/api/cajas/"
-var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
-var urlcajeros = "http://127.0.0.1:8000/api/cajeros/"
+var urlingresos = "/api/ingresos/"
+var urlcajas = "/api/cajas/"
+var urlfacturas = "/api/facturas/"
+var urlcajeros = "/api/cajeros/"
 
 let cajasexistentes = []; // Variable global para almacenar las cajas con todos sus datos
 let facturasExistentes = []; // Variable global para almacenar las facturas con todos sus datos
@@ -37,11 +37,13 @@ function mostrar_reposiciones() {
                 return `
                     <div class="cards">
                         <img src="${INGRESOS_IMAGES}ingreso.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Reposicion ID: ${campo.id}</h2>
-                        <p class="badge">Num de caja: ${campo.caja}</p>
-                        <p class="badge">monto: ${campo.importe}</p>
-                        <p class="badge">Descripción: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
-                        <p class="badge">Factura asociada: ${campo.numFact}</p>
+                        <div class="cards-info">
+                            <p><strong>Reposicion ID: </strong>${campo.id}</p>
+                            <p><strong>Num de caja: </strong>${campo.caja}</p>
+                            <p><strong>monto: </strong>${campo.importe}</p>
+                            <p><strong>Descripción </strong>: ${(campo.descripcion ? campo.descripcion : "").toUpperCase()}</p>
+                            <p><strong>Factura asociada: </strong>${campo.numFact}</p>
+                        </div>
                         <p class= "btn-form1">Numero de reposicion: ${campo.numRepos || "Sin datos"}</p>
                         <button 
                             class="btn-form1"
@@ -262,7 +264,7 @@ function mostrar_factAplicds() {
             ingresosExistentes = ingresos; // <--- AGREGA ESTA LÍNEA para guardar los ingresos en memoria global
 
             //filtro para mostrar solo facturas aplicadas a cajas 
-            facturas = facturas.filter(f => f.aplicada && f.aplicada == 0 && f.aplicada == "0" && f.numRepos == null || f.numRepos == "0" || f.numRepos == 0);
+            facturas = facturas.filter(f => f.aplicada != 0 && (f.numRepos == 0 || f.numRepos == null));
             if (facturas.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay facturas disponibles para aplicar reposición.</h1>";
                 return;
@@ -280,14 +282,16 @@ function mostrar_factAplicds() {
 
                 <div class="cards">
                         <img src="${FACTURAS_IMAGES}factura.jpg" alt="" class="custom-image">
-                        <h2 class="badge">ID Factura: ${factura.id}</h2>
-                        <p class="badge">Num de factura: ${factura.numFact}</p>
-                        <p class="badge">Proveedor: ${factura.proveedor.toUpperCase()}</p>
-                        <p class="badge">Descripción: ${factura.descripcion.toUpperCase()}</p>
-                        <p class="badge">Importe: ${factura.importe}</p>
-                        <p class="badge">Departamento: ${factura.departamento.toUpperCase()}</p>
-                        <p class="badge">Num de reposicion: ${n_reposicion}</p>
-
+                        <div class="card-info">
+                            <p><strong>ID Factura: ${factura.id}</strong></p>
+                            <p><strong>Num de factura: ${factura.numFact}</strong></p>
+                            <p><strong>Proveedor: ${factura.proveedor.toUpperCase()}</strong></p>
+                            <p><strong>Descripción: ${factura.descripcion.toUpperCase()}</strong></p>
+                            <p><strong>Importe: </strong>${factura.importe}</p>
+                            <p><strong>Departamento: </strong>${factura.departamento.toUpperCase()}</p>
+                            <h2 class="titulo-caja">Aplicada en Caja: ${factura.aplicada}</h2>
+                            <p><strong>Num de reposicion: </strong+>${n_reposicion}</p>
+                        </div>
                         <select class="btn-form1" id="caja-${caja ? caja.id : 'N/A'}" ${estaAplicada ? 'disabled' : ''}>
                             ${cajas.map(c => `<option value="${c.id}">Caja ${c.id}</option>`).join("")}
                         </select> 
@@ -304,8 +308,7 @@ function mostrar_factAplicds() {
                             Aplicar reposicion
                         </button>      
                         <p class= "btn-form1">Saldo: ${cajas.map(c => `<option value="${c.saldo}">caja ${c.id}: ${c.saldo}</option>`).join("")}</p>
-
-                    </div>
+                </div>
             `}).join("");
 
             document.getElementById("element").innerHTML = card;
@@ -510,14 +513,14 @@ function solicitarDatosArq() {
                                     Gasto: FACT ID:${f.id} NUM FACT:(${f.numFact}) : ${f.importe}
                                 </p>
                             `).join("")}
-                        <p class= "btn-form">Gasto total: ${totalGastos.toFixed(2)}</p>
+                        <p class= "btn-form2">Gasto total: ${totalGastos.toFixed(2)}</p>
                         ${facturasConRepos.map(f => `
                                 <p class="btn-form1">
                                     Ingreso: REPOSICION:(${f.numRepos}) : ${f.importe}
                                 </p>
                             `).join("")}
-                        <p class= "btn-form">Ingreso total: ${totalIngresos.toFixed(2)}</p>
-                        <p class= "btn-form1">Saldo: ${caja.saldo}</p>
+                        <p class= "btn-form2">Ingreso total: ${totalIngresos.toFixed(2)}</p>
+                        <p class="${caja.saldo < 0 ? 'btn-form' : 'btn-form2'}">Saldo: ${caja.saldo}</p>
                         <button 
                             class="btn-form1"
                             data-caja="${caja.id ? caja.id : 0}"
@@ -543,19 +546,20 @@ function solicitarDatosArq() {
 
 }
 
-function imprimirArqueo(button) {
+imprimirArqueo: function imprimirArqueo(button) {
     // 1. Rescatamos los datos dinámicos inyectados en la tarjeta
     const cajaId = button.getAttribute("data-caja") || "-";
     const nombreCajero = button.getAttribute("data-cajero") || "Operador";
+    const usuarioId = button.getAttribute("data-usuario-id") || ""; // Necesitamos el ID del usuario/cajero para buscar su vale
     const saldoInicial = Number(button.getAttribute("data-inicial") || 0).toFixed(2);
     const totalGastos = Number(button.getAttribute("data-totalgastos") || 0).toFixed(2);
     const totalIngresos = Number(button.getAttribute("data-totalingresos") || 0).toFixed(2);
     const saldoDisponible = Number(button.getAttribute("data-efectivo") || 0).toFixed(2);
     const fechaArqueo = button.getAttribute("data-fecha") || "-";
 
-    // 2. Calculamos las coordenadas del monitor para centrar la ventana emergente
+    // 2. Coordenadas del monitor para centrar la ventana emergente
     const ancho = 700;
-    const alto = 780;
+    const alto = 850;
     const izquierda = (screen.width / 2) - (ancho / 2);
     const arriba = (screen.height / 2) - (alto / 2);
 
@@ -564,7 +568,7 @@ function imprimirArqueo(button) {
         `width=${ancho},height=${alto},top=${arriba},left=${izquierda},scrollbars=yes`
     );
 
-    // 4. Inyectamos la estructura HTML y el CSS de Auditoría Ejecutiva
+    // 4. Inyectamos la estructura HTML, CSS y la lógica de validación interna
     ventanaArqueo.document.write(`
         <!DOCTYPE html>
         <html lang="es">
@@ -626,6 +630,7 @@ function imprimirArqueo(button) {
                 .detalle-fila {
                     display: flex;
                     justify-content: space-between;
+                    align-items: center;
                     padding: 10px 0;
                     border-bottom: 1px dashed #e2e8f0;
                     font-size: 0.95rem;
@@ -639,14 +644,48 @@ function imprimirArqueo(button) {
                     padding: 10px;
                     border-radius: 4px;
                 }
+                .input-conteo {
+                    width: 130px;
+                    padding: 6px 10px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 4px;
+                    font-size: 0.95rem;
+                    text-align: right;
+                    font-weight: bold;
+                    color: #0f172a;
+                }
                 .monto-positivo { color: #10b981; font-weight: 600; }
                 .monto-negativo { color: #ef4444; font-weight: 600; }
+                .monto-neutro { color: #64748b; font-weight: 600; }
                 
-                /* Estilos de Firmas */
+                .alerta-vale {
+                    background-color: #fef2f2;
+                    border: 1px solid #fee2e2;
+                    color: #dc2626;
+                    padding: 12px;
+                    border-radius: 6px;
+                    margin-top: 15px;
+                    font-size: 0.9rem;
+                    text-align: center;
+                    font-weight: 500;
+                    line-height: 1.4;
+                }
+                .alerta-bloqueo {
+                    background-color: #fffbeb;
+                    border: 1px solid #fef3c7;
+                    color: #d97706;
+                    padding: 10px;
+                    border-radius: 6px;
+                    margin-top: 10px;
+                    font-size: 0.85rem;
+                    text-align: center;
+                    font-weight: 600;
+                }
+
                 .seccion-firmas {
                     display: flex;
                     justify-content: space-between;
-                    margin-top: 60px;
+                    margin-top: 45px;
                     gap: 40px;
                 }
                 .bloque-firma {
@@ -667,7 +706,6 @@ function imprimirArqueo(button) {
                     margin-top: 2px;
                 }
 
-                /* Panel de Botones del Pop-Up */
                 .area-botones {
                     margin-top: 30px;
                     display: flex;
@@ -690,18 +728,19 @@ function imprimirArqueo(button) {
                 }
                 .btn-imprimir { background-color: #1e293b; color: #ffffff; }
                 .btn-imprimir:hover { background-color: #0f172a; }
+                .btn-imprimir:disabled { background-color: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
                 
                 .btn-cierre { background-color: #dc2626; color: #ffffff; }
                 .btn-cierre:hover { background-color: #b91c1c; }
+                .btn-cierre:disabled { background-color: #fca5a5; color: #ffffff; cursor: not-allowed; opacity: 0.6; }
                 
                 .btn-cerrar { background-color: #e2e8f0; color: #475569; }
-                .btn-cerrar:hover { background-color: #cbd5e1; }
 
-                /* Reglas exclusivas para papel o PDF */
                 @media print {
                     body { background-color: #ffffff; padding: 0; justify-content: start; }
                     .arqueo-container { border: none; box-shadow: none; padding: 0; max-width: 100%; }
-                    .area-botones { display: none !important; }
+                    .area-botones, .alerta-bloqueo { display: none !important; }
+                    .input-conteo { border: none; background: transparent; padding: 0; font-size: 1rem; }
                 }
             </style>
         </head>
@@ -741,10 +780,28 @@ function imprimirArqueo(button) {
                     <span class="monto-negativo">-$${totalGastos}</span>
                 </div>
                 
-                <div class="seccion-titulo">Dictamen de Liquidación</div>
-                <div class="detalle-fila resettado">
-                    <span><strong>Saldo Efectivo Disponible:</strong></span>
+                <div class="seccion-titulo">Auditoría Física de Efectivo</div>
+                <div class="detalle-fila resaltado">
+                    <span><strong>Saldo Teórico Disponible:</strong></span>
                     <span><strong>$${saldoDisponible}</strong></span>
+                </div>
+                
+                <div class="detalle-fila">
+                    <span><strong>(=) Conteo de efectivo Físico en Caja:</strong></span>
+                    <input type="number" id="txtConteoFisico" class="input-conteo" step="0.01" min="0" placeholder="0.00" oninput="analizarArqueo()">
+                </div>
+
+                <div class="detalle-fila" id="filaDiferencia" style="display: none;">
+                    <span id="lblDiferencia">Diferencia:</span>
+                    <span id="valDiferencia">$0.00</span>
+                </div>
+
+                <div class="alerta-vale" id="contenedorAlertaVale" style="display: none;">
+                    ⚠️ <strong>ANEXAR VALE DE DINERO POR FALTANTE</strong> a cargo de la cuenta de nómina del cajero: <strong>${nombreCajero}</strong>.
+                </div>
+                
+                <div class="alerta-bloqueo" id="msgBloqueo" style="display: none;">
+                    🔒 Botones bloqueados temporalmente hasta verificar el registro del vale en el menú principal.
                 </div>
 
                 <div class="seccion-firmas">
@@ -762,10 +819,108 @@ function imprimirArqueo(button) {
             </div>
 
             <div class="area-botones">
-                <button class="btn btn-imprimir" onclick="window.print()">🖨️ Imprimir Arqueo</button>
-                <button class="btn btn-cierre" onclick="window.opener.procesarBajaCero('${cajaId}'); window.close();">🛑 Cierre de Caja (Saldo Cero)</button>
+                <button class="btn btn-imprimir" id="btnImprimir" onclick="window.print()">🖨️ Imprimir Arqueo</button>
+                <button class="btn btn-cierre" id="btnCierre" onclick="if(confirm('¿Estás completamente seguro de dar de baja la Caja N° ${cajaId}? Esta acción mandará su saldo permanentemente a $0.00 en Django.')){ window.opener.procesarBajaCero('${cajaId}', true); window.close(); }">🛑 Cierre de Caja (Saldo Cero)</button>
                 <button class="btn btn-cerrar" onclick="window.close()">❌ Cerrar Ventana</button>
             </div>
+
+            <script>
+                const saldoTeorico = ${saldoDisponible};
+                const cajaId = '${cajaId}';
+                const usuarioId = '${usuarioId}';
+
+                function analizarArqueo() {
+                    const inputConteo = document.getElementById('txtConteoFisico');
+                    const filaDif = document.getElementById('filaDiferencia');
+                    const lblDif = document.getElementById('lblDiferencia');
+                    const valDif = document.getElementById('valDiferencia');
+                    const alertaVale = document.getElementById('contenedorAlertaVale');
+                    
+                    const btnImprimir = document.getElementById('btnImprimir');
+                    const btnCierre = document.getElementById('btnCierre');
+                    const msgBloqueo = document.getElementById('msgBloqueo');
+
+                    if (inputConteo.value === '') {
+                        filaDif.style.display = 'none';
+                        alertaVale.style.display = 'none';
+                        msgBloqueo.style.display = 'none';
+                        btnImprimir.disabled = false;
+                        btnCierre.disabled = false;
+                        return;
+                    }
+
+                    const conteoFisico = parseFloat(inputConteo.value) || 0;
+                    const diferencia = conteoFisico - saldoTeorico;
+
+                    filaDif.style.display = 'flex';
+                    filaDif.className = 'detalle-fila resaltado'; 
+
+                    if (diferencia < 0) {
+                        lblDif.innerHTML = '<strong>Diferencia de Arqueo (Faltante):</strong>';
+                        valDif.innerHTML = '<strong>-$' + Math.abs(diferencia).toFixed(2) + '</strong>';
+                        valDif.className = 'monto-negativo';
+                        alertaVale.style.display = 'block';
+                        
+                        // FALTANTE DETECTADO: Deshabilitamos operaciones e iniciamos verificación
+                        btnImprimir.disabled = true;
+                        btnCierre.disabled = true;
+                        msgBloqueo.innerHTML = "🔍 Verificando emisión del vale por <strong>$" + Math.abs(diferencia).toFixed(2) + "</strong> en el sistema...";
+                        msgBloqueo.style.display = 'block';
+                        
+                        verificarValeEnBackend(Math.abs(diferencia));
+
+                    } else {
+                        // Si está cuadrada o hay sobrante, no se exige vale. Todo habilitado.
+                        lblDif.innerHTML = diferencia > 0 ? '<strong>Diferencia de Arqueo (Sobrante):</strong>' : '<strong>Resultado del Arqueo:</strong>';
+                        valDif.innerHTML = diferencia > 0 ? '<strong>+$' + diferencia.toFixed(2) + '</strong>' : '<strong>Caja Cuadrada ($0.00)</strong>';
+                        valDif.className = diferencia > 0 ? 'monto-positivo' : 'monto-neutro';
+                        
+                        alertaVale.style.display = 'none';
+                        msgBloqueo.style.display = 'none';
+                        btnImprimir.disabled = false;
+                        btnCierre.disabled = false;
+                    }
+                }
+
+                function verificarValeEnBackend(montoFaltante) {
+                    // Hacemos una petición asíncrona a la API de vales usando el get_queryset
+                    // Buscamos vales PENDIENTES asociados a esta caja y al usuario de este arqueo
+                    const url = '/api/vales/?caja_id=' + cajaId + '&estado=PENDIENTE';
+                    
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(vales => {
+                            const btnImprimir = document.getElementById('btnImprimir');
+                            const btnCierre = document.getElementById('btnCierre');
+                            const msgBloqueo = document.getElementById('msgBloqueo');
+                            
+                            // Buscamos si existe al menos un vale que coincida con el monto exacto del faltante
+                            const valeEncontrado = vales.find(v => parseFloat(v.monto) === parseFloat(montoFaltante));
+                            
+                            if (valeEncontrado) {
+                                // ¡El vale ya existe! Habilitamos los botones para proceder
+                                btnImprimir.disabled = false;
+                                btnCierre.disabled = false;
+                                msgBloqueo.className = "alerta-bloqueo";
+                                msgBloqueo.style.backgroundColor = "#f0fdf4";
+                                msgBloqueo.style.borderColor = "#bbf7d0";
+                                msgBloqueo.style.color = "#16a34a";
+                                msgBloqueo.innerHTML = "✅ Vale localizado con éxito (Folio #" + valeEncontrado.id + "). Botones de impresión y cierre liberados.";
+                            } else {
+                                // Sigue sin existir el vale
+                                btnImprimir.disabled = true;
+                                btnCierre.disabled = true;
+                                msgBloqueo.style.backgroundColor = "#fffbeb";
+                                msgBloqueo.style.borderColor = "#fef3c7";
+                                msgBloqueo.style.color = "#d97706";
+                                msgBloqueo.innerHTML = "❌ No se encontró ningún vale registrado por <strong>$" + montoFaltante.toFixed(2) + "</strong>. Genérelo desde el menú de Cajas para desbloquear.";
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Error al validar vale:", err);
+                        });
+                }
+            </script>
 
         </body>
         </html>
@@ -774,9 +929,11 @@ function imprimirArqueo(button) {
     ventanaArqueo.document.close();
 }
 
-function procesarBajaCero(cajaId) {
-    if (!confirm(`¿Estás completamente seguro de dar de baja la Caja N° ${cajaId}?\nEsta acción mandará su saldo permanentemente a $0.00 en Django.`)) {
-        return;
+function procesarBajaCero(cajaId, skipConfirm) {
+    if (!skipConfirm) {
+        if (!confirm(`¿Estás completamente seguro de dar de baja la Caja N° ${cajaId}?\nEsta acción mandará su saldo permanentemente a $0.00 en Django.`)) {
+            return;
+        }
     }
 
     const urlCajaPatch = `${urlcajas}${cajaId}/`; // Ajusta la concatenación según tus variables URL

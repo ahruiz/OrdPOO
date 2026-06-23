@@ -1,9 +1,11 @@
-var urlcajas = "http://127.0.0.1:8000/api/cajas/"
-var urlcajeros = "http://127.0.0.1:8000/api/cajeros/"
-var urlfacturas = "http://127.0.0.1:8000/api/facturas/"
+var urlcajas = "/api/cajas/"
+var urlcajeros = "/api/cajeros/"
+var urlfacturas = "/api/facturas/"
+var urlvales = "/api/vales/"
 
 let cajasexistentes = [];
 let cajerosexistentes = [];
+let valesGlobal = [];
 
 function makeFetch() {
     Promise.all([
@@ -11,8 +13,6 @@ function makeFetch() {
         fetch(urlcajeros).then(r => r.json())
     ])
         .then(([cajas, cajeros]) => {
-            console.log("cajas", cajas);
-            console.log("cajeros", cajeros);
 
             if (cajas.length === 0 || cajeros.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
@@ -25,20 +25,22 @@ function makeFetch() {
                 return ` 
                     <div class="cards">
                         <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image"> 
-                        <h2 class="badge">Num de Caja: ${cajero ? cajero.id : "Desconocido"}</h2>
-                        <p class="badge">Cajero: ${caja.id}</p>
-                        <p class="badge">Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</p>
-                        <p class="badge">Telefono: ${cajero ? cajero.phone : "Desconocido"}</p>
+                        <div class="cards-info">
+                            <p><strong>Num de Caja: ${cajero ? cajero.id : "Desconocido"}</strong></p>
+                            <p><strong>Cajero: ${caja.id}</strong></p>
+                            <p><strong>Nombre: ${cajero ? cajero.name.toUpperCase() + " " + cajero.last_name.toUpperCase() : "Desconocido"}</strong></p>
+                            <p><strong>Correo: ${cajero ? cajero.email.toUpperCase() : "Desconocido"}</strong></p>
+                        <p><strong>Telefono: ${cajero ? cajero.phone : "Desconocido"}</strong></p>
+                        </div>
                         <p class="badge">Saldo inicial: ${caja.saldo_inicial}</p>
                         <p class="btn-form1">Saldo actual: ${caja.saldo}</p>
+                        </div>
                     </div>
             `}).join("");
 
             document.getElementById("element").innerHTML = card;
         })
         .catch(error => {
-            console.log(error);
         });
 
 }
@@ -53,29 +55,31 @@ function cajasen0() {
     })
 
         .then(data => {
-            console.log(data);
             var campos = data;
+            console.log(data);
 
             if (campos.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
                 return;
             }
 
-            cajasencero = campos.filter(c => c.saldo === '0.00'); //
-            data = cajasencero; // Sobrescribimos data con las cajas que tienen saldo 0 para mostrar solo esas
-            console.log(data);
-            var campos = data;
+            cajasencero = campos.filter(c => c.saldo === 0); //
+            if (cajasencero.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
 
-            var card = campos.map(function (campo) {
+            var card = cajasencero.map(function (campo) {
                 return `
                     <div class="cards">
                         <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Caja: ${campo.id}</h2>
-                        <p class="badge">Num de cajero: ${campo.Cajero}</p>
-                        <p class="badge">Saldo inicial: ${campo.saldo_inicial}</p>
-                        <p class="badge">Saldo actual: ${campo.saldo}</p>
-
-                        <button class="btn-form1" onclick="borrarCajero(${campo.id})">
+                        <div class="cards-info">
+                        <p><strong>Num de Caja: ${campo.id}</strong></p>
+                        <p><strong>Num de cajero: ${campo.Cajero}</strong></p>
+                        <p><strong>Saldo inicial: ${campo.saldo_inicial}</strong></p>
+                        <p><strong>Saldo actual: ${campo.saldo}</strong></p>
+                        </div>
+                        <button class="btn-form1" onclick="borrarCaja(${campo.id})">
                          Borrar
                         </button>
                     </div>
@@ -85,7 +89,6 @@ function cajasen0() {
 
         })
         .catch(error => {
-            console.log(error);
         });
 
 }
@@ -100,12 +103,10 @@ function cajasactivs() {
     })
 
         .then(data => {
-            console.log(data);
             var campos = data;
 
             cajasactivas = campos.filter(c => c.saldo !== '0.00'); //
             data = cajasactivas; // Sobrescribimos data con las cajas que tienen saldo diferente de 0 para mostrar solo esas
-            console.log(data);
             var campos = data;
 
             if (campos.length === 0) {
@@ -117,18 +118,18 @@ function cajasactivs() {
                 return `
                     <div class="cards">
                         <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
-                        <h2 class="badge">Num de Caja: ${campo.id}</h2>
-                        <p class="badge">Num de cajero: ${campo.Cajero}</p>
-                        <p class="badge">Saldo inicial: ${campo.saldo_inicial}</p>
-                        <p class="badge">Saldo actual: ${campo.saldo}</p>
-
+                        <div class"cards-info">
+                            <p><strong>Num de Caja: ${campo.id}</strong></p>
+                            <p><strong>Num de cajero: ${campo.Cajero}</strong></p>
+                            <p><strong>Saldo inicial: ${campo.saldo_inicial}</strong></p>
+                            <p><strong>Saldo actual: ${campo.saldo}</strong></p>
+                        </div>
                     </div>
             `}).join("");
 
             document.getElementById("element").innerHTML = card;
         })
         .catch(error => {
-            console.log(error);
         });
 
 }
@@ -158,8 +159,6 @@ function crear_caja() {
         fetch(urlcajas).then(response => response.json())
     ])
         .then(([cajeros, cajas]) => {
-            console.log("Cajeros existentes:", cajeros);
-            console.log("Cajas existentes:", cajas);
 
             // VALIDAR SI EXISTE EL CAJERO
             let cajeroExiste = cajeros.find(c => String(c.id) === String(cajero));
@@ -181,7 +180,6 @@ function crear_caja() {
                 saldo_inicial: Number(saldo_inicial),
                 saldo: Number(saldo)
             };
-            console.log("Datos a enviar:", data);
 
             // CREAR CAJA
             return fetch(urlcajas, {
@@ -200,7 +198,6 @@ function crear_caja() {
         })
         .then(data => {
             if (!data) return;
-            console.log('Respuesta servidor:', data);
             alert("Caja creada correctamente");
             document.getElementById("cajero").value = "";
             document.getElementById("saldo_inicial").value = "";
@@ -208,39 +205,231 @@ function crear_caja() {
             makeFetch();
         })
         .catch(error => {
-            console.log('Error en el servidor:', error);
             //document.getElementById("mensaje").innerHTML = error.message;
         });
 
 }
 
-function borrarCajero(id) {
-
-    if (!confirm("¿Seguro que quieres borrar este cajero?")) {
+function borrarCaja(id) {
+    // 1. Confirmación inicial de la acción
+    if (!confirm("¿Seguro que quieres borrar esta caja?")) {
         return;
     }
 
-    fetch(urlcajas + id + "/", {
-        method: "DELETE"
-    })
+    // 2. IMPORTANTE: Validar en Frontend si hay vales pendientes antes de borrar.
+    // Aquí puedes hacer un fetch rápido a tu API de vales filtrando por el ID de la caja.
+    fetch(urlvales + "?caja=" + id + "&estado=pendiente")
         .then(response => {
-
-            if (!response.ok) {
-                throw new Error("Error al borrar");
+            if (!response.ok) throw new Error("No se pudo verificar el estado del vale");
+            return response.json();
+        })
+        .then(vale => {
+            // Condición: Si el vale está pendiente (ajusta 'pendiente' según manejes tu campo estado)
+            if (vale.estado === "pendiente" || vale.pendiente === true) {
+                alert("No se puede eliminar este vale porque se encuentra en estado PENDIENTE.");
+                return;
             }
 
-            alert("Caja eliminada correctamente");
-            cajasen0(); // Recargar tarjetas
+            // 3. Si no hay vales, procedemos con el DELETE seguro (sin body)
+            return fetch(urlcajas + id + "/", {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        })
+        .then(response => {
+            // Esto solo se ejecuta si el paso anterior (el DELETE) ocurrió
+            if (response) {
+                if (!response.ok) throw new Error("Error al borrar");
+
+                alert("Caja eliminada correctamente");
+                cajasen0(); // Recargar tarjetas
+            }
         })
         .catch(error => {
-            console.log("Error:", error);
-            alert("No se pudo borrar");
+            console.error(error);
+            alert("No se pudo borrar la caja. Verifique la conexión o restricciones del servidor.");
         });
+}
+
+function cancelarVale(id, motivoCancel) {
+    console.log("motivo desde vales pendientes: ", motivoCancel);
+    //Validación de que no vaya vacío el campo que acabamos de meter
+    if (!motivoCancel || motivoCancel.trim() === "") {
+        alert("❌ Por favor, escribe el motivo de la CANCELACION antes de continuar.");
+        return;
+    }
+
+    if (!confirm("¿Seguro que quieres dar de baja este VALE?")) {
+        return;
+    }
+
+    // 1. Consultamos el vale original para clonar sus propiedades
+    fetch(urlvales + id + "/")
+        .then(response => {
+            if (!response.ok) throw new Error("No se pudo verificar el estado del vale");
+            return response.json();
+        })
+        .then(valeOriginal => {
+            // Nota: En tu fetch anterior filtrabas por "PENDIENTE" (mayúsculas), 
+            // asegúrate de validar idéntico a tu backend.
+            if (valeOriginal.estado === "PAGADO") {
+                alert("No se puede eliminar un vale que ya está liquidado.");
+                return;
+            }
+            if (valeOriginal.estado === "CANCELADO") {
+                alert("Este vale ya se encuentra cancelado.");
+                return;
+            }
+            console.log(valeOriginal);
+            // 2. CREAMOS EL NUEVO REGISTRO (HISTORIAL DE BAJA)
+            // Enviamos un POST a la lista general de vales
+            return fetch(urlvales, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'X-CSRFToken': csrftoken // Actívalo si Django te lo pide
+                },
+                body: JSON.stringify({
+                    caja: Number(valeOriginal.caja),
+                    usuario_recibe: Number(valeOriginal.usuario_recibe),
+                    monto: Number(valeOriginal.monto), // Puede ir en negativo si es contra-asiento
+                    motivo: "OTRO",
+                    observaciones: `CANCELACIÓN FOLIO #${valeOriginal.id} --- Motivo: ${motivoCancel.toUpperCase()}`
+                })
+            }).then(postResponse => {
+                if (!postResponse.ok) throw new Error("No se pudo crear el registro de historial de baja");
+                //return postResponse.json();
+                // 3. ACTUALIZAMOS O ELIMINAMOS EL ORIGINAL
+                return fetch(urlvales + id + "/", {
+                    method: "PATCH",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        estado: "CANCELADO"
+                    })
+                });
+            });
+        })
+        .then(responseFinal => {
+            if (!responseFinal.ok) throw new Error("Error al dar de baja el vale original");
+
+            alert("🎉 Proceso completado: Se ha generado el registro de CANCELACION e inactivado el vale original.");
+            //actualizamos el nuevo registro
+            actualizaEstadoCancelacion(motivoCancel);
+
+        })
+        .catch(error => {
+            console.error("Error en el flujo:", error);
+            alert("Error al procesar la baja del vale: " + error.message);
+        });
+}
+
+function actualizaEstadoCancelacion(motivoCancel) {
+    //leemos los vales y localizamos el que tiene el motivo de la cancelacion y actualizamos a "SIN EFECTO" en un patch
+    console.log("Iniciando búsqueda para cambiar a SIN EFECTO...");
+
+    // 1. Fetch para leer todos los vales
+    fetch(urlvales)
+        .then(response => {
+            if (!response.ok) throw new Error("No se pudieron leer los vales para el historial");
+            return response.json();
+        })
+        .then(vales => {
+            const textoBuscado = motivoCancel.toUpperCase();
+
+            // 2. Agregamos el .find() para localizar el vale clonado recién creado
+            // Buscamos un vale cuyo campo observaciones o motivo contenga el texto de cancelación
+            const valeClonado = vales.find(vale =>
+                vale.estado === "PENDIENTE" && // Filtramos por el estado inicial con el que se creó
+                vale.observaciones &&
+                vale.observaciones.includes(textoBuscado)
+            );
+
+            // Si el find lo localiza, sacamos sus datos
+            if (!valeClonado) {
+                console.warn("⚠️ No se encontró el registro clonado en el pool actual.");
+                return;
+            }
+
+            console.log("🎯 Registro clonado localizado con ID:", valeClonado.id);
+
+            // 3. Agregamos el fetch (PATCH) usando el ID localizado
+            return fetch(urlvales + valeClonado.id + "/", {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'X-CSRFToken': csrftoken // Actívalo si Django lo requiere
+                },
+                body: JSON.stringify({
+                    estado: "SIN EFECTO" // Actualizamos el estado a SIN EFECTO
+                })
+            });
+        })
+        .then(responsePatch => {
+            if (responsePatch) {
+                if (!responsePatch.ok) throw new Error("No se pudo actualizar el estado a SIN EFECTO");
+                console.log("✅ Historial actualizado correctamente a 'SIN EFECTO'.");
+                mostrarValesPendSinBotones(); // Refrescamos la interfaz para asegurar el orden visual
+            }
+        })
+        .catch(error => {
+            console.error("❌ Error al actualizar el estado de cancelación:", error);
+        });
+}
+
+function mostrarValesPendSinBotones() {
+    fetch(urlvales).then(Response => {
+        if (!Response.ok) {
+            throw new Error("Error en la solicitud");
+        }
+        return Response.json();
+    })
+
+        .then(data => {
+            var campos = data;
+            console.log(data);
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+            const valesPendientes = campos.filter(v =>
+                v.estado === "PENDIENTE" || v.estado === "CANCELADO" || "SIN EFECTO" || "OTRO" || "ANTICIPO"
+            );
+
+            valesGlobal = campos;
+
+            var card = valesPendientes.map(function (campo) {
+                return `
+                    <div class="cards">
+                        <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <div class="cards-info">
+                            <p><strong>Numero del Vale: ${campo.id}</strong></p>
+                            <p><strong>Numero de caja: ${campo.caja}</strong></p>
+                            <p><strong>Cajero: ${campo.empleado_nombre + ' ' + campo.empleado_apellido}</strong></p>
+                            <p><strong>Monto: ${campo.monto}</strong></p>
+                            <p><strong>Motivo: ${campo.motivo}</strong></p>
+                            <p><strong>Observaciones: ${campo.observaciones}</strong></p>
+                            <p><strong>Fecha de creación: ${campo.fecha_creacion}</strong></p>
+                        </div>
+                        <p class="btn-form">Estado: ${campo.estado}</p>
+                    </div>
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+            //console.log("motivo de la cancelacion: ", motivoCancel);
+
+        })
+        .catch(error => {
+            alert('Error al cargar vales: ' + error.message);
+        });
+
 }
 
 function modifica_caja() {
     alert("No modificamos CAJAS, solo las mostramos y/o en su caso las borramos, lo siento :(");
-    makeFetch();
+    return;
 }
 
 function mostrar_fact() {
@@ -250,8 +439,6 @@ function mostrar_fact() {
         fetch(urlcajas).then(r => r.json())
     ])
         .then(([facturas, cajas]) => {
-            console.log("facturas", facturas);
-            console.log("cajas", cajas);
 
             if (cajas.length === 0 || facturas.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
@@ -267,13 +454,15 @@ function mostrar_fact() {
 
                 <div class="cards">
                         <img src="/static/facturas/factura.jpg" alt="" class="custom-image">
-                        <h2 class="badge">ID Factura: ${factura.id}</h2>
-                        <p class="badge">Num de factura: ${factura.numFact}</p>
-                        <p class="badge">Proveedor: ${factura.proveedor.toUpperCase()}</p>
-                        <p class="badge">Descripción: ${factura.descripcion.toUpperCase()}</p>
-                        <p class="badge">Importe: ${factura.importe}</p>
-                        <p class="badge">Departamento: ${factura.departamento.toUpperCase()}</p>
-                        <p class="badge"><h2>${factura.aplicada ? `Aplicada en Caja: ${factura.aplicada}` : 0}</h2></p>
+                        <div class=cards-info">
+                            <p><strong>ID Factura: </strong>${factura.id}</p>
+                            <p><strong>Num de factura: </strong>${factura.numFact}</p>
+                            <p><strong>Proveedor: </strong>${factura.proveedor.toUpperCase()}</p>
+                            <p><strong>Descripción: </strong>${factura.descripcion.toUpperCase()}</p>
+                            <p><strong>Importe: </strong>${factura.importe}</p>
+                            <p><strong>Departamento: </strong>${factura.departamento.toUpperCase()}</p>
+                            <p class="badge"><h2>${factura.aplicada ? `Aplicada en Caja: ${factura.aplicada}` : 0}</h2></p>
+                        </div>
                         <select class="btn-form1" id="caja-${factura.id}" ${estaAplicada ? 'disabled' : ''}>
                             ${cajas.map(c => `<option value="${c.id}">Caja ${c.id}</option>`).join("")}
                         </select>
@@ -293,7 +482,6 @@ function mostrar_fact() {
             document.getElementById("element").innerHTML = card;
         })
         .catch(error => {
-            console.log(error);
         });
 
 }
@@ -315,7 +503,6 @@ function aplic_fact(factura_id, num_factura, aplicada, importe) {
         alert("No hay suficiente saldo en la caja para aplicar esta factura....EFECTUE REPOSICION DE FONDOS");
         return;
     }
-    console.log("Caja seleccionada:", caja_id, cajaSeleccionada.saldo, importe);
 
     if (!confirm("¿Seguro que quieres aplicar esta factura?")) {
         return; // Si el usuario cancela, salimos de la función
@@ -326,7 +513,6 @@ function aplic_fact(factura_id, num_factura, aplicada, importe) {
         factura_id: Number(factura_id),
         numFact: Number(num_factura) // Este es el campo que te pedía el error 400
     };
-    console.log("Datos a enviar:", data);
 
     fetch(urlcajas + caja_id + "/aplic_fact/", {
         method: "POST",
@@ -346,8 +532,450 @@ function aplic_fact(factura_id, num_factura, aplicada, importe) {
 
         })
         .catch(error => {
-            console.log("Error:", error);
             alert("No se pudo aplicar la factura");
+        });
+}
+
+function mostrarValesPend() {
+    fetch(urlvales).then(Response => {
+        if (!Response.ok) {
+            throw new Error("Error en la solicitud");
+        }
+        return Response.json();
+    })
+
+        .then(data => {
+            var campos = data;
+            console.log(data);
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+            const valesPendientes = campos.filter(v =>
+                v.estado === "PENDIENTE" || v.estado === "CANCELADO" || "SIN EFECTO"
+            );
+
+            valesGlobal = campos;
+
+            var card = valesPendientes.map(function (campo) {
+                return `
+                    <div class="cards">
+                        <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <div class="cards-info">
+                            <p><strong>Numero del Vale: ${campo.id}</strong></p>
+                            <p><strong>Numero de caja: ${campo.caja}</strong></p>
+                            <p><strong>Cajero: ${campo.empleado_nombre + ' ' + campo.empleado_apellido}</strong></p>
+                            <p><strong>Monto: ${campo.monto}</strong></p>
+                            <p><strong>Motivo: ${campo.motivo}</strong></p>
+                            <p><strong>Observaciones: ${campo.observaciones}</strong></p>
+                            <p><strong>Fecha de creación: ${campo.fecha_creacion}</strong></p>
+                        </div>
+                        <p class="btn-form">Estado: ${campo.estado}</p>
+                        <div class="contenedor-botones">
+                            <input class="input-form" type="text" name="motivoCancel" id="motivoCancel-${campo.id}" placeholder="Motivo de CANCELACION">
+                        
+                            <button class="btn-form1" onclick="cancelarVale(${campo.id}, document.getElementById('motivoCancel-${campo.id}').value)">
+                                Cancelar VALE
+                            </button>
+                        </div>
+                    </div>
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+            //console.log("motivo de la cancelacion: ", motivoCancel);
+
+        })
+        .catch(error => {
+            alert('Error al cargar vales: ' + error.message);
+        });
+
+}
+
+
+function mostrarVales() {
+    fetch(urlvales).then(Response => {
+        if (!Response.ok) {
+            throw new Error("Error en la solicitud");
+        }
+        return Response.json();
+    })
+
+        .then(data => {
+            var campos = data;
+
+            if (campos.length === 0) {
+                document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
+                return;
+            }
+            valesGlobal = campos;
+            console.log(valesGlobal)
+
+            var card = campos.map(function (campo) {
+                return `
+                    <div class="cards">
+                        <img src="/static/cajas/caja_ch.jpg" alt="" class="custom-image">
+                        <div class="cards-info">
+                            <p><strong>Numero del Vale: </strong>${campo.id}</p>
+                            <p><strong>Numero de caja: </strong>${campo.caja}</p>
+                            <p><strong>Cajero: </strong>${campo.empleado_nombre + ' ' + campo.empleado_apellido}</p>
+                            <p><strong>Monto: </strong>${campo.monto}</p>
+                            <p><strong>Motivo: </strong>${campo.motivo}</p>
+                            <p><strong>Observaciones: </strong>${campo.observaciones}</p>
+                            <p><strong>Fecha de creación: </strong>${campo.fecha_creacion}</p>
+                        </div>
+                        <p class="btn-form">Estado: ${campo.estado}</p>
+                        <div class="contenedor-botones">
+                            ${campo.estado === 'PENDIENTE' ? `
+                            <button class="btn-form1" onclick="aplicar_descuento(${campo.id}, ${campo.monto}, ${campo.caja})">
+                                Aplicar descuento en nómina
+                            </button>
+                            ` : `
+                            <button class="btn-form1 btn-deshabilitado" disabled>
+                                Vale ${campo.estado === 'APLICADO' ? 'Descontado' : 'No aplicable'}
+                            </button>
+                            `}
+                            <button class="btn-form1" onclick="desplegarVentanaImpresionVale(${campo.id})">
+                                Imprimir Vale
+                            </button>
+                        </div>
+                    </div>
+            `}).join("");
+
+            document.getElementById("element").innerHTML = card;
+
+        })
+        .catch(error => {
+            alert('Error al cargar vales: ' + error.message);
+        });
+
+}
+
+/**
+ * Revisa el historial del cajero antes de registrar el nuevo vale
+ */
+function solicitarValesCaj() {
+    // event.preventDefault(); // Descoméntalo si estás dentro de un <form> para evitar que recargue la página
+
+    const cajaId = document.getElementById('caja').value;
+    const usuarioId = document.getElementById('cajero').value; // Este es el empleado/cajero a verificar
+    const monto = document.getElementById('monto').value;
+    const motivo = document.getElementById('MotivoDelVale').value;
+    const observaciones = document.getElementById('comentario').value;
+
+    // Agregamos el usuario_id a la URL para que el backend filtre específicamente a ese empleado
+    const urlVerificacion = `${urlvales}?caja_id=${cajaId}&usuario_id=${usuarioId}&estado=PENDIENTE`;
+
+    fetch(urlVerificacion)
+
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error del servidor (${response.status}): No tienes permisos para consultar estos vales.`);
+            }
+            return response.json();
+        })
+
+        .then(valesExistentes => {
+            const deudasPrevias = valesExistentes.filter(v =>
+                v.caja == cajaId &&
+                v.estado === "PENDIENTE"
+            ); console.log(valesExistentes)
+
+            if (!valesExistentes || valesExistentes.length === 0) {
+                alert("⚠️ Operación detenida: No existen registros de vales activos en el sistema para validar deudas.\nPresione ACEPTAR para continuar con la creacion del VALE.");
+                crearVale({ cajaId, usuarioId, monto, motivo, observaciones });
+            }
+
+            if (deudasPrevias.length > 0) {
+                const confirmacion = confirm(`⚠️ ATENCIÓN: El empleado seleccionado ya cuenta con ${deudasPrevias.length} vale(s) PENDIENTE(S) de cobro en esta caja.\n\n¿Desea acumular este nuevo vale de $${monto} a su cuenta de responsabilidad bajo su propio riesgo?`);
+
+                if (!confirmacion) {
+                    console.log("Operación cancelada por el usuario.");
+                    return;
+                } else {
+                    crearVale({ cajaId, usuarioId, monto, motivo, observaciones });
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("No se pudo conectar con el servidor de auditoría o hubo un error en los datos.");
+        });
+}
+/**
+ * Registra el vale en la base de datos (POST)
+ */
+function crearVale(datosVale) {
+    const idCaja = Number(datosVale.cajaId);
+    const idUsuario = Number(datosVale.usuarioId);
+
+    // Doble escudo por si se intentan colar datos en "0" o vacíos
+    if (idCaja === 0 || idUsuario === 0 || !datosVale.motivo || datosVale.motivo.trim() === "") {
+        alert("❌ Error de Validación de Formulario:\n\nNo se puede crear el vale porque la Caja o el Cajero seleccionados no son válidos (Clave '0' o vacía).\n\nPor favor, llena los campos correctamente.");
+        return; // <--- Aborta el fetch por completo si los tipos de datos van a reventar el backend
+    }
+    const ventanaImpresionAnticipada = window.open('', '_blank');
+    if (!ventanaImpresionAnticipada) {
+        alert('El navegador bloqueó la ventana de impresión. Por favor, permite las ventanas emergentes.');
+        return;
+    }
+    // Ponemos un mensaje temporal de carga en la ventana abierta
+    ventanaImpresionAnticipada.document.write("<p style='font-family:sans-serif; text-align:center; margin-top:50px;'>Generando vale y preparando vista de impresión...</p>");
+
+    // Tomamos el token CSRF obligatorio de Django de las cookies
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || "";
+
+    fetch('/api/vales/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            //'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({
+            caja: Number(datosVale.cajaId),
+            usuario_recibe: Number(datosVale.usuarioId),
+            monto: Number(datosVale.monto),
+            motivo: datosVale.motivo,
+            observaciones: datosVale.observaciones
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    const errorMsg = Object.entries(errorData)
+                        .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+                        .join('\n');
+                    throw new Error(`Error del servidor:\n${errorMsg}`);
+                });
+            }
+            return response.json();
+        })
+        .then(valeRegistrado => {
+            alert(`🎉 Vale de Responsabilidad generado con éxito (Folio #${valeRegistrado.id}).`);
+            document.getElementById('caja').value = '';
+            document.getElementById('cajero').value = '';
+            document.getElementById('monto').value = '';
+            document.getElementById('MotivoDelVale').value = '';
+            document.getElementById('comentario').value = '';
+
+            // Agregar el vale recién creado a valesGlobal para que esté disponible
+            if (!valesGlobal) valesGlobal = [];
+            valesGlobal.push(valeRegistrado);
+
+            desplegarVentanaImpresionVale(valeRegistrado, ventanaImpresionAnticipada);
+            mostrarVales();
+        })
+        .catch(err => {
+            if (ventanaImpresionAnticipada) ventanaImpresionAnticipada.close();
+            alert(`Error: ${err.message}`);
+        });
+}
+
+function desplegarVentanaImpresionVale(valeData) {
+    let vale = null;
+    let valeId = null;
+
+    if (valeData && typeof valeData === 'object') {
+        vale = valeData; //viene del formulario
+        valeId = vale.id;
+    } else if (valeData) {
+        valeId = Number(valeData); //viene de mostrarVale
+
+        // Buscamos en valesGlobal con respaldo seguro
+        let arregloVales = window.valesGlobal || (typeof valesGlobal !== 'undefined' ? valesGlobal : null);
+
+        if (arregloVales) {
+            vale = arregloVales.find(v => Number(v.id) === valeId);
+        }
+    }
+
+    // Si por alguna razón el vale no existe en ninguna vía, frenamos de forma segura
+    if (!vale) {
+        let totalVales = window.valesGlobal ? window.valesGlobal.length : (typeof valesGlobal !== 'undefined' ? valesGlobal.length : 0);
+        alert('No se encontró el vale en memoria para imprimir. Vales disponibles: ' + totalVales);
+        return;
+    }
+
+    const ancho = 680;
+    const alto = 620;
+    const izquierda = (screen.width / 2) - (ancho / 2);
+    const arriba = (screen.height / 2) - (alto / 2);
+
+    const ventanaPrint = window.open('', '_blank',
+        `width=${ancho},height=${alto},top=${arriba},left=${izquierda},scrollbars=yes`
+    );
+
+    if (!ventanaPrint) {
+        alert('El navegador bloqueó la ventana de impresión. Permite ventanas emergentes e inténtalo otra vez.');
+        return;
+    }
+
+    // Mapeamos los textos amigables del motivo
+    const motivosDict = {
+        'FALTANTE_ARQUEO': 'FALTANTE EN ARQUEO DE CAJA',
+        'ANTICIPO': 'ANTICIPO / PRESTAMO CORTO',
+        'OTRO': 'OTRO MOTIVO DESCRIPTIVO'
+    };
+    const motivoTexto = motivosDict[vale.motivo] || vale.motivo;
+    const fechaLimpia = new Date(vale.fecha_creacion).toLocaleString('es-MX');
+
+    ventanaPrint.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>Vale de Caja Chica - Folio #${vale.id}</title>
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                    background-color: #ffffff;
+                    color: #0f172a;
+                    padding: 40px;
+                    margin: 0;
+                }
+                .documento-box {
+                    border: 2px solid #0f172a;
+                    padding: 30px;
+                    border-radius: 6px;
+                    max-width: 580px;
+                    margin: 0 auto;
+                }
+                .encabezado {
+                    text-align: center;
+                    border-bottom: 2px solid #0f172a;
+                    padding-bottom: 15px;
+                    margin-bottom: 20px;
+                }
+                .encabezado h2 { margin: 0; font-size: 1.3rem; uppercase; letter-spacing: 0.5px; }
+                .encabezado .folio { font-size: 1.1rem; color: #dc2626; font-weight: bold; margin-top: 5px; }
+                .monto-grand {
+                    text-align: right;
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                    padding: 8px;
+                    background-color: #f1f5f9;
+                    border-radius: 4px;
+                }
+                p { line-height: 1.6; font-size: 0.95rem; margin: 10px 0; }
+                .nota-legal {
+                    font-size: 0.88rem;
+                    text-align: justify;
+                    color: #334155;
+                    background-color: #f8fafc;
+                    padding: 12px;
+                    border-left: 3px solid #0f172a;
+                    margin-top: 25px;
+                }
+                .seccion-firmas {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 60px;
+                    gap: 30px;
+                }
+                .bloque-firma { flex: 1; text-align: center; }
+                .linea-firma {
+                    border-top: 1px solid #475569;
+                    padding-top: 6px;
+                    font-size: 0.85rem;
+                    font-weight: bold;
+                }
+                .cargo-firma { font-size: 0.75rem; color: #64748b; }
+                
+                .area-botones { text-align: center; margin-top: 35px; }
+                .btn-print {
+                    padding: 12px 24px;
+                    font-weight: bold;
+                    background-color: #0f172a;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                }
+                @media print {
+                    body { padding: 0; }
+                    .documento-box { border: 2px solid #000; }
+                    .area-botones { display: none !important; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="documento-box">
+                <div class="encabezado">
+                    <h2>VALE DE RESPONSABILIDAD DE DINERO</h2>
+                    <div class="folio">FOLIO: VAL-${vale.id}</div>
+                </div>
+
+                <div class="monto-grand">BUENO POR: $${parseFloat(vale.monto).toFixed(2)} MXN</div>
+                
+                <p><strong>Caja Afectada:</strong> Caja Chica N° ${vale.caja}</p>
+                <p><strong>Fecha de Expedición:</strong> ${fechaLimpia}</p>
+                <p><strong>Concepto o Motivo:</strong> ${motivoTexto}</p>
+                <p><strong>Detalles/Observaciones:</strong> ${vale.observaciones || 'Sin observaciones adicionales.'}</p>
+                
+                <div class="nota-legal">
+                    <strong>PAGARÉ:</strong> Por medio de este documento, reconozco formalmente haber recibido o quedar bajo mi cargo la responsabilidad de la cantidad descrita en la parte superior. Autorizo expresamente a la administración central de la institución a aplicar el descuento de este saldo en el próximo periodo de nómina si no se liquida de manera física previa.
+                </div>
+
+                <div class="seccion-firmas">
+                    <div class="bloque-firma">
+                        <div class="linea-firma">${vale.empleado_nombre} ${vale.empleado_apellido}</div>
+                        <div class="cargo-firma">Cajero / Deudor Responsable</div>
+                        <div class="cargo-firma">(Firma de Aceptación)</div>
+                    </div>
+                    <div class="bloque-firma">
+                        <div class="linea-firma"><br></div>
+                        <div class="cargo-firma">Supervisor / Jefe de Cajas</div>
+                        <div class="cargo-firma">(Firma Autógrafa de Control)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-botones">
+                <button class="btn-print" onclick="window.print()">🖨️ Imprimir Vale Oficial</button>
+            </div>
+        </body>
+        </html>
+    `);
+    ventanaPrint.document.close();
+}
+
+function aplicar_descuento(valeId, monto, cajaId) {
+    if (!confirm(`¿Confirma que desea aplicar un descuento de $${monto} en nómina por el Vale #${valeId}?`)) {
+        return;
+    }
+    fetch(`${urlvales}${valeId}/aplicar-descuento/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            monto: Number(monto),
+            caja_id: Number(cajaId),
+            observaciones: `Descuento aplicado desde caja ${cajaId}`,
+            aplicado_por: 'sistema'
+        })
+    })
+        .then(async response => {
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (err) {
+                data = { error: text };
+            }
+
+            if (response.ok) {
+                alert(`Descuento aplicado correctamente al Vale #${valeId}`);
+                mostrarVales();
+            } else {
+                const message = data.error || data.detail || JSON.stringify(data);
+                alert(`Error ${response.status}: ${message}`);
+            }
+        })
+        .catch(error => {
+            alert('Error de red o servidor. Mira la consola para más detalles.');
         });
 }
 
@@ -361,7 +989,6 @@ function facturaspendientes() {
         .then(facturas => {
             var pendientes = facturas.filter(f => f.aplicada === 0);
         });
-    console.log("pendientes", pendientes);
 }
 
 function facturaspagadas() {
@@ -371,7 +998,6 @@ function facturaspagadas() {
         .then(facturas => {
             var pagadas = facturas.filter(f => f.aplicada !== 0);
         });
-    console.log("pagadas", pagadas);
 }
 
 
@@ -382,8 +1008,6 @@ function gasto_total() {
         fetch(urlfacturas).then(r => r.json())
     ])
         .then(([cajas, facturas]) => {
-            console.log("cajas", cajas);
-            console.log("facturas", facturas);
 
             if (cajas.length === 0 || facturas.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay datos disponibles.</h1>";
@@ -396,14 +1020,14 @@ function gasto_total() {
 
                 <div class="cards">
                         <img src="/static/facturas/factura.jpg" alt="" class="custom-image">
-                        <p class= "btn-form1">Caja: ${caja.id}</p>
+                        <p class= "btn-form1"> Caja: ${caja.id}</p>
                         ${facturasporCaja.map(f => `
                                 <p class="btn-form1">
                                     Factura: ${f.id} (${f.numFact}) : ${f.importe}
                                 </p>
                             `).join("")}
                         <p class= "btn-form1">Saldo: ${caja.saldo}</p>
-                        <p class= "btn-form">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0).toFixed(2)}</p>
+                        <p class= "btn-form1">Gasto total: ${facturasporCaja.reduce((acc, f) => acc + Number(f.importe), 0).toFixed(2)}</p>
 
                     </div>
             `}).join("");
@@ -411,7 +1035,6 @@ function gasto_total() {
             document.getElementById("element").innerHTML = card;
         })
         .catch(error => {
-            console.log(error);
         });
 
 }
@@ -422,8 +1045,6 @@ function cajasppal() {
         fetch(urlcajeros).then(r => r.json())
     ])
         .then(([cajas, cajeros]) => {
-            console.log("cajas", cajas);
-            console.log("cajeros", cajeros);
 
             if (cajas.length === 0 || cajeros.length === 0) {
                 document.getElementById("element").innerHTML = "<h1>No hay cajas disponibles.</h1>";
@@ -448,7 +1069,6 @@ function cajasppal() {
             document.getElementById("element").innerHTML = card;
         })
         .catch(error => {
-            console.log(error);
         });
 
 }

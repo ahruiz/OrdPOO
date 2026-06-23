@@ -8,7 +8,7 @@
     <script>window.STATIC_URL = "{% static '' %}";</script>
     <script type="application/javascript" src="{% static 'cajas/cajas.js' %}" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MODIFICAR CAJA</title>
+    <title>MODIFICAR CAJA Y VALES</title>
 </head>
 
 <body>
@@ -16,21 +16,76 @@
         <div class="row">
             <div class="col">
                 <div class="form-container">
-                    <h1 class="title">Modificar CAJA</h1>
-                    <button class="btn-form" onclick="modifica_caja()">solicitar informacion</button>
-                    <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">Volver a
-                        Cajas</button>
-                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
-                        MENU PPAL
-                    </button>
+
+                    <div class="tabs-nav">
+                        <button class="tab-link active-tab" onclick="switchTab(event, 'pestana-mod-cajas')">Modificar
+                            Cajas</button>
+                        <button class="tab-link" onclick="switchTab(event, 'pestana-mod-vales')">Modificar
+                            Vales</button>
+                    </div>
+
+                    <div id="pestana-mod-cajas" class="tab-content active-content">
+                        <h1 class="title">Modificar CAJA</h1>
+                        <div class="centered-form-group">
+                            <button class="btn-form" onclick="modifica_caja()">solicitar informacion</button>
+                        </div>
+                    </div>
+
+                    <div id="pestana-mod-vales" class="tab-content">
+                        <h1 class="title">Modificar VALES</h1>
+                        <div class="centered-form-group">
+
+                            <button class="btn-form" onclick="modifica_caja()">Solicitar información</button>
+                        </div>
+                    </div>
+
+                    <div class="centered-form-group">
+                        <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">
+                            Volver a Cajas
+                        </button>
+                        <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">
+                            Volver a MENU PPAL
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+
     <div class="container" id="element"></div>
     <div class="text-card" id="mensaje"></div>
-</body>
 
-</html>
+    <script>
+        function switchTab(event, tabId) {
+            // 1. Ocultar todos los contenidos de las pestañas
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active-content'));
+
+            // 2. Quitar el estado activo de las pestañas superiores
+            const tabs = document.querySelectorAll('.tab-link');
+            tabs.forEach(tab => tab.classList.remove('active-tab'));
+
+            // 3. Mostrar la pestaña actual
+            document.getElementById(tabId).classList.add('active-content');
+            event.currentTarget.classList.add('active-tab');
+
+            // 4. Limpieza de seguridad: Resetea los divs de respuesta al cambiar de pestaña
+            document.getElementById('element').innerHTML = '';
+            document.getElementById('mensaje').innerHTML = '';
+        }
+
+        // Función provisional para que no te marque error al dar clic en la nueva pestaña
+        function buscarValeModificar() {
+            const valeId = document.getElementById('idValeModificar').value;
+            if (!valeId) {
+                alert("Por favor, ingresa un ID de vale válido.");
+                return;
+            }
+            console.log("Buscando información del vale ID:", valeId);
+            // Aquí llamarás a la función real en tu cajas.js que pinte los datos del vale en '#element'
+        }
+    </script>
+</body>
 
 </html>

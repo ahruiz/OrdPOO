@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,10 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(_+0fdlyy8m&p#(1jj!fw2c)3a*^2hafa-j3mf6nu85&b5@5@m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
+ALLOWED_HOSTS = [
+    'caja-chica-humberto.onrender.com', 
+    'cajachica-ejvd.onrender.com', 
+    'localhost', 
+    '127.0.0.1'
+]
 
 # Application definition
 
@@ -43,14 +49,15 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'CajaChica.urls'
@@ -62,6 +69,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -76,12 +84,26 @@ WSGI_APPLICATION = 'CajaChica.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Django buscará la variable DATABASE_URL (que te da Render). 
+# Si no la encuentra (porque estás en tu computadora), usará la de respaldo (SQLite).
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Tu configuración local de siempre (puedes dejar SQLite aquí para empezar)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -120,7 +142,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # STATICFILES_DIRS = [
-#     BASE_DIR / "static",
+#     BASE_DIR / "Caja/static",
 # ]
 
 
@@ -133,6 +155,7 @@ else:
         'http://127.0.0.1:5500',
         'http://localhost:8000',
         'http://127.0.0.1:8000',
+        'https://cajachica-ejvd.onrender.com',  # <-- Tu frontend en internet (¡Esta es la clave!)
     ]
 
 CORS_ALLOW_HEADERS = [
@@ -149,3 +172,7 @@ CORS_ALLOW_HEADERS = [
 
 import os
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+#AUTH_USER_MODEL = 'Caja.Usuario'

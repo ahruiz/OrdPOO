@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'cajas/cajas.css' %}">
+    <script>window.STATIC_URL = "{% static '' %}"</script>
+    <script type="application/javascript" src="{% static 'cajas/cajas.js' %}" defer></script>
+    <script defer src="{% static 'bloqPestDuplicds.js' %}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vales de CAJA</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="row">
+            <div class="col">
+                <div class="form-container">
+                    <h1>Vales de CAJA</h1>
+                    <select id="caja" class="input-form" required>
+                        <option value="">Seleccione una caja</option>
+                    </select>
+                    <select id="cajero" class="input-form" required>
+                        <option value="">Seleccione un cajero</option>
+                    </select>
+                    <input class="input-form" type="number" name="monto" id="monto" placeholder="Monto del Vale">
+                    <select id="MotivoDelVale" class="input-form" required>
+                        <option value="">Seleccione un motivo</option>
+                        <option value="FALTANTE_ARQUEO">Faltante en Arqueo de Caja</option>
+                        <option value="ANTICIPO">Anticipo / Préstamo Corto</option>
+                        <option value="OTRO">Otro Motivo Descriptivo</option>
+                    </select>
+                    <input class="input-form" type="text" name="comentario" id="comentario" placeholder="Observaciones">
+                    <button class="btn-form" onclick="mostrarVales()">Mostrar vales</button>
+                    <button class="btn-form" onclick="solicitarValesCaj()">Solicitar vales pendientes</button>
+                    <button class="btn-form1" onclick="location.href='{% url 'cajas' %}'">Volver a
+                        Cajas
+                    </button>
+                    <button class="btn-form1" onclick="location.href='{% url 'menu_ppal' %}'">Volver a
+                        MENU PPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="element"></div>
+    <div class="text-card" id="mensaje"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar las cajas disponibles desde el backend
+            fetch('/api/cajas/')
+                .then(response => {
+                    if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    return response.json();
+                })
+                .then(data => {
+                    const cajaSelect = document.getElementById('caja');
+                    data.forEach(caja => {
+                        const option = document.createElement('option');
+                        option.value = caja.id;
+                        option.textContent = `CAJA #${caja.id}`;
+                        cajaSelect.appendChild(option);
+                    });
+                    console.log('Cajas cargadas:', data);
+                })
+                .catch(error => console.error('Error al cargar cajas:', error));
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar los cajerosdisponibles desde el backend
+            fetch('/api/cajeros/')
+                .then(response => {
+                    if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    return response.json();
+                })
+                .then(data => {
+                    const cajeroSelect = document.getElementById('cajero');
+                    data.forEach(cajero => {
+                        const option = document.createElement('option');
+                        option.value = cajero.id;
+                        option.textContent = `${cajero.id}`;
+                        cajeroSelect.appendChild(option);
+                    });
+                    console.log('Cajeros cargados:', data);
+                })
+                .catch(error => console.error('Error al cargar cajeros:', error));
+        });
+    </script>
+</body>
+
+</html>
